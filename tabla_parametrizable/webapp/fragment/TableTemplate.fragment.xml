@@ -1,0 +1,16 @@
+<core:FragmentDefinition xmlns:core="sap.ui.core"
+                         xmlns="sap.ui.table"
+                         xmlns:m="sap.m">
+  <Table id="customTable"
+         rows="{/tableData}"
+         fixedColumnCount="{/config/fixedColumnCount}"
+         selectionMode="None">
+    <extension>
+      <m:OverflowToolbar id="customToolbar">
+        <m:Title text="{/config/title}" />
+        <m:ToolbarSpacer/>
+        <!-- Botones se agregan por controlador -->
+      </m:OverflowToolbar>
+    </extension>
+  </Table>
+</core:FragmentDefinition>

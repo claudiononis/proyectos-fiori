@@ -1,0 +1,668 @@
+<mvc:View controllerName="ventilado.ventilado.controller.Desconsolidado"
+xmlns="sap.ui.table"
+xmlns:rowmodes="sap.ui.table.rowmodes"
+xmlns:mvc="sap.ui.core.mvc"
+xmlns:u="sap.ui.unified"
+xmlns:c="sap.ui.core"
+xmlns:m="sap.m"
+height="100%">
+<m:Page
+    showHeader="false"
+    enableScrolling="false"
+    class="sapUiContentPadding">
+    <m:content>
+        
+        <Table id="table1" class="customTableHeight"
+            rows="{/tableData}"
+            selectionMode="None"
+            ariaLabelledBy="title" fixedColumnCount ="2"  >
+           <extension>
+             
+                <m:OverflowToolbar style="Clear">
+                    <m:Title id="title" text="Desafectacion"/><m:Button text="Scan de productos" press="onNavToScan" class="buttonSpacing"/>
+                    <m:ToolbarSpacer/>
+                    <m:Button  id="Desafectar"
+                    text="Desafectar Material en SAP"
+                    type="Reject"
+                    press="onDesafectacionPress"/>
+                    <m:Button
+                text="Ver Material desafectado"
+                type="Reject"
+                press="onVerDesafectacionPress"
+                />
+                </m:OverflowToolbar>
+            </extension>
+            <rowMode>
+                <rowmodes:Fixed rowCount="13"/>
+            </rowMode>
+            <columns>
+                <Column width="100px">
+                    <m:VBox class="customColumnHeader2" >                                        
+                        <m:Label text="Transporte" class="customColumnHeader2"  wrapping="false" />
+                        <m:Text text="Control" class="sameHeight" wrapping="false" />
+                        <m:Text text="Cod. Interno" class="sameHeight" wrapping="false" />
+                    </m:VBox>
+                    
+                    <template>
+                        <m:HBox justifyContent="End">
+                            <m:Text text="{CodInterno}" class="boldAndLargeText" />
+                        </m:HBox>
+                    </template>
+                </Column>
+                <Column width="350px">
+                    <m:VBox class="customColumnHeader2" >                                        
+                        <m:Label text="{/tableData/0/Transporte}" class="customColumnHeader2" wrapping="false" />
+                        <m:Text text="" wrapping="false" class="sameHeight"  />
+                        <m:Text text="Descrip. del Producto" class="sameHeight" wrapping="false" />
+                    </m:VBox>
+                    <template>
+                        <m:Text text="{Descripcion}" class="boldAndLargeText" />
+                    </template>
+                </Column>
+                <Column width="70px" >
+                    <m:VBox class="customColumnHeader2" >                                        
+                        <m:Label text="" class="customColumnHeader2" wrapping="false" />
+                        <m:Text text="" wrapping="false" class="sameHeight"  />
+                        <m:Text text="TOT" class="sameHeight" wrapping="false" />
+                    </m:VBox>
+                    <template>
+                        <m:Text text="{Tot}" class="boldAndLargeText fixedWidthText"/>
+                    </template>
+                </Column>
+                <Column width="70px" >
+                    <m:VBox class="customColumnHeader2">                                        
+                        <m:Label text="" class="customColumnHeader2" wrapping="false" />
+                        <m:Text text="" class="sameHeight"/>
+                        <m:Text text="Scan" class="sameHeight"  />
+                    </m:VBox>
+                    <template>
+                        <m:Text text="{scan}" class="boldAndLargeText fixedWidthText"/>
+                    </template>
+                </Column>
+                <Column width="120px" >
+                    <m:VBox class="customColumnHeader2">                                        
+                        <m:Label text="{= 'Entrega ' + '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0>>'}" class="customColumnHeader2" wrapping="false" />
+                        <m:Text text="Tot. Entrega >>" class="sameHeight"/>
+                        <m:Text text="Falta"  class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox>
+                            <m:Text text="{Falta}" class="boldAndLargeText fixedWidthText"  />
+                            <!-- Separación -->
+                            <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${Falta} === 0 ? true : false}" />
+                            <m:Text text="..."  class="yellowBackground fixedWidthText boldAndLargeText" visible="{= ${Falta} > 0 ? true : false}" />    
+                        </m:HBox>
+                    </template>
+                </Column>
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader" >                                    
+                        <m:Label text="{/totalesPorRuta/0/Entrega}" class="customColumnHeader sameHeight " wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/0/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/0/CantidadTotal'}, {path: '/totalesPorRuta/0/Ruta'},{path: '/totalesPorRuta/0/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox>
+                             <!-- Elemento con cantidadEscaneada -->
+                             <m:Text text="{01/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${01/color} === false}" />
+                             <!-- Separación -->
+                                   <m:Label text="" width="4px" />
+                             <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                             <m:Text text="{01/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${01/color} === true}" />
+                             <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${01/color} === false}" />
+                             <m:Text text="{01/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${01/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/1/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/1/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/1/CantidadTotal'}, {path: '/totalesPorRuta/1/Ruta'},{path: '/totalesPorRuta/1/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{02/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${02/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{02/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${02/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${02/color} === false}" />
+                            <m:Text text="{02/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${02/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+                
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/2/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/2/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/2/CantidadTotal'}, {path: '/totalesPorRuta/2/Ruta'},{path: '/totalesPorRuta/2/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{03/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${03/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{03/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${03/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${03/color} === false}" />
+                            <m:Text text="{03/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${03/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/3/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/3/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/3/CantidadTotal'}, {path: '/totalesPorRuta/3/Ruta'},{path: '/totalesPorRuta/3/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{04/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${04/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{04/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${04/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${04/color} === false}" />
+                            <m:Text text="{04/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${04/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/4/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/4/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/4/CantidadTotal'}, {path: '/totalesPorRuta/4/Ruta'},{path: '/totalesPorRuta/4/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{05/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${05/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{05/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${05/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${05/color} === false}" />
+                            <m:Text text="{05/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${05/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/5/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/5/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/5/CantidadTotal'}, {path: '/totalesPorRuta/5/Ruta'},{path: '/totalesPorRuta/5/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{06/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${06/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{06/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${06/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${06/color} === false}" />
+                            <m:Text text="{06/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${06/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/6/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/6/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/6/CantidadTotal'}, {path: '/totalesPorRuta/6/Ruta'},{path: '/totalesPorRuta/6/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{07/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${07/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{07/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${07/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${07/color} === false}" />
+                            <m:Text text="{07/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${07/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/7/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/7/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/7/CantidadTotal'}, {path: '/totalesPorRuta/7/Ruta'},{path: '/totalesPorRuta/7/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{08/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${08/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{08/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${08/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${08/color} === false}" />
+                            <m:Text text="{08/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${08/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/8/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/8/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/8/CantidadTotal'}, {path: '/totalesPorRuta/8/Ruta'},{path: '/totalesPorRuta/8/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{09/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${09/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{09/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${09/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${09/color} === false}" />
+                            <m:Text text="{09/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${09/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+
+
+
+
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader" >                                    
+                        <m:Label text="{/totalesPorRuta/9/Entrega}" class="customColumnHeader sameHeight " wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/9/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/9/CantidadTotal'}, {path: '/totalesPorRuta/9/Ruta'},{path: '/totalesPorRuta/9/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox>
+                             <!-- Elemento con cantidadEscaneada -->
+                             <m:Text text="{10/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${10/color} === false}" />
+                             <!-- Separación -->
+                                   <m:Label text="" width="4px" />
+                             <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                             <m:Text text="{10/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${10/color} === true}" />
+                             <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${10/color} === false}" />
+                             <m:Text text="{10/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${10/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/10/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/10/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/10/CantidadTotal'}, {path: '/totalesPorRuta/10/Ruta'},{path: '/totalesPorRuta/10/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{11/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${11/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{11/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${11/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${11/color} === false}" />
+                            <m:Text text="{11/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${11/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+                
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/11/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/11/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/11/CantidadTotal'}, {path: '/totalesPorRuta/11/Ruta'},{path: '/totalesPorRuta/11/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{12/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${12/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{12/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${12/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${12/color} === false}" />
+                            <m:Text text="{12/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${12/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/12/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/12/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/12/CantidadTotal'}, {path: '/totalesPorRuta/12/Ruta'},{path: '/totalesPorRuta/12/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{13/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${13/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{13/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${13/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${13/color} === false}" />
+                            <m:Text text="{13/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${13/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/13/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/13/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/13/CantidadTotal'}, {path: '/totalesPorRuta/13/Ruta'},{path: '/totalesPorRuta/13/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{14/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${14/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{14/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${14/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${14/color} === false}" />
+                            <m:Text text="{14/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${14/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/14/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/14/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/14/CantidadTotal'}, {path: '/totalesPorRuta/14/Ruta'},{path: '/totalesPorRuta/14/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{15/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${15/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{15/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${15/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${15/color} === false}" />
+                            <m:Text text="{15/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${15/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/15/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/15/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/15/CantidadTotal'}, {path: '/totalesPorRuta/15/Ruta'},{path: '/totalesPorRuta/15/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{16/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${16/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{16/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${16/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${16/color} === false}" />
+                            <m:Text text="{16/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${16/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/16/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/16/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/16/CantidadTotal'}, {path: '/totalesPorRuta/16/Ruta'},{path: '/totalesPorRuta/16/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{17/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${17/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{17/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${17/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${17/color} === false}" />
+                            <m:Text text="{17/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${17/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/17/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/17/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/17/CantidadTotal'}, {path: '/totalesPorRuta/17/Ruta'},{path: '/totalesPorRuta/17/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{18/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${18/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{18/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${18/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${18/color} === false}" />
+                            <m:Text text="{18/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${18/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/18/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/18/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/18/CantidadTotal'}, {path: '/totalesPorRuta/18/Ruta'},{path: '/totalesPorRuta/18/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{19/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${19/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{19/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${19/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${19/color} === false}" />
+                            <m:Text text="{19/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${19/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/20/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/20/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/20/CantidadTotal'}, {path: '/totalesPorRuta/20/Ruta'},{path: '/totalesPorRuta/20/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{21/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${21/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{21/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${21/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${21/color} === false}" />
+                            <m:Text text="{21/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${21/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+                
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/21/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/21/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/21/CantidadTotal'}, {path: '/totalesPorRuta/21/Ruta'},{path: '/totalesPorRuta/21/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{22/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${22/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{22/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${22/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${22/color} === false}" />
+                            <m:Text text="{22/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${22/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/22/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/22/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/22/CantidadTotal'}, {path: '/totalesPorRuta/22/Ruta'},{path: '/totalesPorRuta/22/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{23/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${23/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{23/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${23/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${23/color} === false}" />
+                            <m:Text text="{23/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${23/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/23/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/23/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/23/CantidadTotal'}, {path: '/totalesPorRuta/23/Ruta'},{path: '/totalesPorRuta/23/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{24/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${24/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{24/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${24/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${24/color} === false}" />
+                            <m:Text text="{24/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${24/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/24/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/24/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/24/CantidadTotal'}, {path: '/totalesPorRuta/24/Ruta'},{path: '/totalesPorRuta/24/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{25/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${25/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{25/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${25/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${25/color} === false}" />
+                            <m:Text text="{25/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${25/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/25/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/25/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/25/CantidadTotal'}, {path: '/totalesPorRuta/25/Ruta'},{path: '/totalesPorRuta/25/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{26/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${26/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{26/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${26/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${26/color} === false}" />
+                            <m:Text text="{26/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${26/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/26/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/26/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/26/CantidadTotal'}, {path: '/totalesPorRuta/26/Ruta'},{path: '/totalesPorRuta/26/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{27/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${27/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{27/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${27/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${27/color} === false}" />
+                            <m:Text text="{27/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${27/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/27/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/27/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/27/CantidadTotal'}, {path: '/totalesPorRuta/27/Ruta'},{path: '/totalesPorRuta/27/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{28/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${28/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{28/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${28/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${28/color} === false}" />
+                            <m:Text text="{28/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${28/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+
+                <Column width="90px">
+                    <m:VBox class="customColumnHeader">                                    
+                        <m:Label text="{/totalesPorRuta/28/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                        <m:Text text="{path: '/totalesPorRuta/28/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                        <m:Text text="{parts: [{path: '/totalesPorRuta/28/CantidadTotal'}, {path: '/totalesPorRuta/28/Ruta'},{path: '/totalesPorRuta/28/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                    </m:VBox>
+                    <template>
+                        <m:HBox  class="columnGray">
+                            <!-- Elemento con cantidadEscaneada -->
+                            <m:Text text="{29/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${29/color} === false}" />
+                            <!-- Separación -->
+                                  <m:Label text="" width="4px" />
+                            <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                            <m:Text text="{29/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${29/color} === true}" />
+                            <m:Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${29/color} === false}" />
+                            <m:Text text="{29/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${29/color2} === true}" />
+                        </m:HBox>
+                    </template>
+                </Column>
+            </columns>
+        </Table>
+    </m:content>
+</m:Page>
+</mvc:View>

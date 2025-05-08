@@ -1,0 +1,21 @@
+<mvc:View controllerName="indexdb.controller.View1"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m">
+    <Page id ="p1" title="{i18n>title}">
+        <VBox>
+            <!-- Lista de elementos -->
+            <List id="list"/>
+
+            <!-- Input para agregar nuevos datos -->
+            <Input id="id" placeholder="Id"/>
+            <Input id="inputCodigoInterno" placeholder="Codigo Interno"/>
+            <Input id="inputLugarPDisp" placeholder="Lugar P Disp"/>
+            <Input id="inputOtroCampo" placeholder="Otro Campo"/>
+            
+            <!-- Botones para CRUD -->
+            <Button text="Crear" press="onCreate"/>
+            <Button text="Actualizar" press="onUpdate"/>
+            <Button text="Eliminar" press="onDelete"/>
+        </VBox>
+    </Page>
+</mvc:View>

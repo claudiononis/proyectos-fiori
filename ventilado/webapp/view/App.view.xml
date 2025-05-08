@@ -1,0 +1,21 @@
+<mvc:View controllerName="ventilado.ventilado.controller.App"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m">
+    <VBox>
+        <!-- Fixed Header for the Clock -->
+        <Bar>
+            <contentMiddle>
+                <Text text="{clock>/time}" />
+            </contentMiddle>
+            <contentRight>
+                <Button text="{= ${clock>/isRunning} ? 'Pausar' : 'Reanudar'}" press=".onToggleClock" />
+            </contentRight>
+        </Bar>
+        
+        <!-- Application Pages -->
+        <App id="app">
+            <!-- Define your pages here -->
+        </App>
+    </VBox>
+</mvc:View>

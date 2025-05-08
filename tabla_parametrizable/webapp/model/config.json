@@ -1,0 +1,21 @@
+{
+    "config": {
+      "title": "Materiales",
+      "fixedColumnCount": 2,
+      "columns": [
+        { "title": "Código Interno", "width": "100px", "path": "CodInterno", "fixed": true },
+        { "title": "Descripción", "width": "300px", "path": "Descripcion", "fixed": true },
+        { "title": "Totales", "width": "80px", "path": "Tot" },
+        { "title": "Scan", "width": "80px", "path": "Scan" }
+      ],
+      "toolbarButtons": [
+        { "text": "Escanear", "icon": "sap-icon://camera", "press": "onScanPress" },
+        { "text": "Guardar", "type": "Emphasized", "press": "onSavePress" }
+      ]
+    },
+    "tableData": [
+      { "CodInterno": "1234", "Descripcion": "Producto A", "Tot": 10, "Scan": 9 },
+      { "CodInterno": "5678", "Descripcion": "Producto B", "Tot": 20, "Scan": 20 }
+    ]
+  }
+  

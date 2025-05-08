@@ -1,0 +1,16 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "start",
+			"problemMatcher": [],
+			"label": "npm: start",
+			"detail": "fiori run --open \"test/flpSandbox.html?sap-ui-xx-viewCache=false#ventiladoventilado-display\"",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}

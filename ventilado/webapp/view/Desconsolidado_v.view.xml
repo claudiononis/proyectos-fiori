@@ -1,0 +1,681 @@
+<mvc:View controllerName="ventilado.ventilado.controller.Desconsolidado"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m"
+    xmlns:m="sap.m"
+    xmlns:l="sap.ui.layout"
+    height="100%" width="100%">
+
+    <Page title="Desafectacion">
+        <content>
+            <Button text="Scan de productos" press="onNavToScan" class="buttonSpacing"/>
+            <ScrollContainer width="100%" height="88%" horizontal="true" vertical="true">
+                <Table  items="{path: '/tableData'}" fixedLayout="Strict" class="sapUiResponsiveMargin sapUiTable" growing="true"
+                    growingThreshold="20" growingScrollToLoad="true">
+                        <columns>
+                            <Column  width="100px">
+                                <header>
+                                    <VBox class="customColumnHeader2" >                                        
+                                        <Label text="Transporte" class="customColumnHeader2"  wrapping="false" />
+                                        <Text text="Control" class="sameHeight" wrapping="false" />
+                                        <Text text="Cod. Interno" class="sameHeight" wrapping="false" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="350px">
+                                <header>
+                                    <VBox class="customColumnHeader2" >                                        
+                                        <Label text="{/tableData/0/Transporte}" class="customColumnHeader2" wrapping="false" />
+                                        <Text text="" wrapping="false" class="sameHeight"  />
+                                        <Text text="Descrip. del Producto" class="sameHeight" wrapping="false" />
+                                    </VBox>
+                                </header>
+                            </Column>
+    
+                            <Column width="70px">
+                                <header>
+                                    <VBox class="customColumnHeader2" >                                        
+                                        <Label text="" class="customColumnHeader2" wrapping="false" />
+                                        <Text text="" wrapping="false" class="sameHeight"  />
+                                        <Text text="TOT" class="sameHeight" wrapping="false" />
+                                    </VBox>
+                                </header>
+                            </Column>
+    
+                            <Column width="70px">
+                                <header>
+                                  <VBox class="customColumnHeader2">                                        
+                                        <Label text="" class="customColumnHeader2" wrapping="false" />
+                                        <Text text="" class="sameHeight"/>
+                                        <Text text="Scan" class="sameHeight"  />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="150px">
+                                <header>
+                                  <VBox class="customColumnHeader2">                                        
+                                        <Label text="Entrega >>" class="customColumnHeader2" wrapping="false" />
+                                        <Text text="Totales Entrega >>" class="sameHeight"/>
+                                        <Text text="Falta" class="sameHeight"  />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            
+                            
+                            <Column width="90px" >
+                                <header>
+                                    <VBox class="customColumnHeader" >                                    
+                                        <Label text="{/totalesPorRuta/0/Entrega}" class="customColumnHeader sameHeight " wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/0/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/0/CantidadTotal'}, {path: '/totalesPorRuta/0/Ruta'},{path: '/totalesPorRuta/0/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/1/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/1/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/1/CantidadTotal'}, {path: '/totalesPorRuta/1/Ruta'},{path: '/totalesPorRuta/1/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/2/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/2/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/2/CantidadTotal'}, {path: '/totalesPorRuta/2/Ruta'},{path: '/totalesPorRuta/2/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/3/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/3/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/3/CantidadTotal'}, {path: '/totalesPorRuta/3/Ruta'},{path: '/totalesPorRuta/3/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/4/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/4/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/4/CantidadTotal'}, {path: '/totalesPorRuta/4/Ruta'},{path: '/totalesPorRuta/4/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/5/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/5/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/5/CantidadTotal'}, {path: '/totalesPorRuta/5/Ruta'},{path: '/totalesPorRuta/5/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/6/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/6/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/6/CantidadTotal'}, {path: '/totalesPorRuta/6/Ruta'},{path: '/totalesPorRuta/6/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/7/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/7/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/7/CantidadTotal'}, {path: '/totalesPorRuta/7/Ruta'}, {path: '/totalesPorRuta/7/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/8/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/8/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/8/CantidadTotal'}, {path: '/totalesPorRuta/8/Ruta'}, {path: '/totalesPorRuta/8/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/9/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/9/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/9/CantidadTotal'}, {path: '/totalesPorRuta/9/Ruta'}, {path: '/totalesPorRuta/9/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/10/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/10/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/10/CantidadTotal'}, {path: '/totalesPorRuta/10/Ruta'}, {path: '/totalesPorRuta/10/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/11/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/11/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/11/CantidadTotal'}, {path: '/totalesPorRuta/11/Ruta'}, {path: '/totalesPorRuta/11/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/12/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/12/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/12/CantidadTotal'}, {path: '/totalesPorRuta/12/Ruta'}, {path: '/totalesPorRuta/12/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/13/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/13/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/13/CantidadTotal'}, {path: '/totalesPorRuta/13/Ruta'}, {path: '/totalesPorRuta/13/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/14/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/14/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/14/CantidadTotal'}, {path: '/totalesPorRuta/14/Ruta'}, {path: '/totalesPorRuta/14/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/15/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/15/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/15/CantidadTotal'}, {path: '/totalesPorRuta/15/Ruta'}, {path: '/totalesPorRuta/15/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/1164/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/16/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/16/CantidadTotal'}, {path: '/totalesPorRuta/16/Ruta'}, {path: '/totalesPorRuta/16/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/17/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/17/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/17/CantidadTotal'}, {path: '/totalesPorRuta/17/Ruta'}, {path: '/totalesPorRuta/17/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/18/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/18/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/18/CantidadTotal'}, {path: '/totalesPorRuta/18/Ruta'}, {path: '/totalesPorRuta/18/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/19/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/1194/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/19/CantidadTotal'}, {path: '/totalesPorRuta/19/Ruta'}, {path: '/totalesPorRuta/19/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/20/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/20/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/20/CantidadTotal'}, {path: '/totalesPorRuta/20/Ruta'}, {path: '/totalesPorRuta/20/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/21/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/21/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/21/CantidadTotal'}, {path: '/totalesPorRuta/21/Ruta'}, {path: '/totalesPorRuta/21/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/22/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/22/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/22/CantidadTotal'}, {path: '/totalesPorRuta/22/Ruta'}, {path: '/totalesPorRuta/22/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/23/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/23/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/23/CantidadTotal'}, {path: '/totalesPorRuta/23/Ruta'}, {path: '/totalesPorRuta/23/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/24/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/24/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/24/CantidadTotal'}, {path: '/totalesPorRuta/24/Ruta'}, {path: '/totalesPorRuta/24/REntregauta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/25/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/25/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/25/CantidadTotal'}, {path: '/totalesPorRuta/25/Ruta'}, {path: '/totalesPorRuta/25/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/26/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/26/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/26/CantidadTotal'}, {path: '/totalesPorRuta/26/Ruta'}, {path: '/totalesPorRuta/26/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/27/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/27/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/27/CantidadTotal'}, {path: '/totalesPorRuta/27/Ruta'}, {path: '/totalesPorRuta/27/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/28/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/28/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/28/CantidadTotal'}, {path: '/totalesPorRuta/28/Ruta'}, {path: '/totalesPorRuta/28/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="90px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/29/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/29/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/29/CantidadTotal'}, {path: '/totalesPorRuta/29/Ruta'}, {path: '/totalesPorRuta/29/Entrega'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            
+                        </columns>
+                        <items>
+                            <ColumnListItem>
+                                <cells>
+                                    <HBox justifyContent="End" >
+                                    <Text text="{CodInterno}" class="boldAndLargeText" />
+                                    </HBox>
+                                    <Text text="{Descripcion}" class="boldAndLargeText" />
+                                   
+                                    <Text text="{Tot}" class="boldAndLargeText"  />
+                                    <Text text="{scan}" class="boldAndLargeText"  />
+                                    <HBox>
+                                        <Text text="{Falta}" class="boldAndLargeText fixedWidthText"  />
+                                        <!-- Separación -->
+                                        <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${Falta} === 0 ? true : false}" />
+                                        <Text text="..."  class="yellowBackground fixedWidthText boldAndLargeText" visible="{= ${Falta} > 0 ? true : false}" />    
+                                    </HBox>
+                                    <HBox  class="columnGray">
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{01/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${01/color} === false}" />
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{01/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${01/color} === true}" />
+                                        <Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${01/color} === false}" />
+                                        <Text text="{01/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${01/color2} === true}" />
+                                    </HBox>
+                                    <HBox>
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{02/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${02/color} === false}" />
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{02/cantidadEscaneada}"  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${02/color} === true}" />
+                                        <Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${02/color} === false}" />
+                                        <Text text="{02/cantFaltante}"  class="orangeBackground fixedWidthText boldAndLargeText" visible="{= ${02/color2} === true}" />
+                                    </HBox>
+                                    <HBox class="columnGray">
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{03/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${03/color} === false}" />
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{03/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${03/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${03/color} === false}" />
+                                        <Text text="{03/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${03/color2} === true}" />
+                                    </HBox>
+                                    <HBox>
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{04/cantidadEscaneada}" class="boldAndLargeText fixedWidthText" visible="{= ${04/color} === false}" />
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{04/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${04/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${04/color} === false}" />
+                                        <Text text="{04/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${04/color2} === true}" />
+                                    </HBox>
+                                    <HBox  class="columnGray">
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{05/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${05/color} === false}" />
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{05/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${05/color} === true}" />
+                                        <Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${05/color} === false}" />
+                                        <Text text="{05/cantFaltante}"  class="orangeBackground fixedWidthText " visible="{= ${05/color2} === true}" />
+                                    </HBox>
+                                    <HBox>
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{06/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${06/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{06/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${06/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${06/color} === false}" />
+                                        <Text text="{06/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${06/color2} === true}" />
+                                    </HBox>
+                                    <HBox  class="columnGray">
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{07/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${07/color} === false}" />
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{07/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${07/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${07/color} === false}" />
+                                        <Text text="{07/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${07/color2} === true}" />
+                                    </HBox> 
+                                    <HBox>
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{08/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${08/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{08/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${08/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${08/color} === false}" />
+                                        <Text text="{08/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${08/color2} === true}" />
+                                    </HBox>
+                                    <HBox  class="columnGray">
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{09/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${09/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{09/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${09/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${09/color} === false}" />
+                                        <Text text="{09/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${09/color2} === true}" />
+                                    </HBox>
+                                    <HBox>
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{10/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${10/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{10/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${10/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${10/color} === false}" />
+                                        <Text text="{10/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${10/color2} === true}" />
+                                    </HBox>
+                                    <HBox  class="columnGray">
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{11/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${11/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{11/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${11/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${11/color} === false}" />
+                                        <Text text="{11/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${11/color2} === true}" />
+                                    </HBox>
+                                    <HBox>
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{12/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${12/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{12/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${12/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${12/color} === false}" />
+                                        <Text text="{12/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${12/color2} === true}" />
+                                    </HBox>
+                                    <HBox  class="columnGray">
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{13/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${13/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{13/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${13/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${13/color} === false}" />
+                                        <Text text="{13/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${13/color2} === true}" />
+                                    </HBox>
+                                    <HBox>
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{14/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${14/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{14/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${14/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${14/color} === false}" />
+                                        <Text text="{14/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${14/color2} === true}" />
+                                    </HBox>
+                                    <HBox  class="columnGray">
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{15/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${15/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{15/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${15/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${15/color} === false}" />
+                                        <Text text="{15/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${15/color2} === true}" />
+                                    </HBox>
+                                    <HBox  class="columnGray">
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{16/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${16/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{16/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${16/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${16/color} === false}" />
+                                        <Text text="{16/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${16/color2} === true}" />
+                                    </HBox>
+    
+                                    <HBox>
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{17/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${17/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una 7 del modelo -->
+                                        <Text text="{17/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${17/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${17/color} === false}" />
+                                        <Text text="{17/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${17/color2} === true}" />
+                                    </HBox>
+                                    <HBox  class="columnGray">
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{18/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${18/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{18/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${18/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${18/color} === false}" />
+                                        <Text text="{18/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${18/color2} === true}" />
+                                    </HBox>
+                                    <HBox>
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{19/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${19/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{19/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${19/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${19/color} === false}" />
+                                        <Text text="{19/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${19/color2} === true}" />
+                                    </HBox>
+                                    <HBox  class="columnGray">
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{20/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${20/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{20/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${20/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${20/color} === false}" />
+                                        <Text text="{20/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${20/color2} === true}" />
+                                    </HBox>
+                                    <HBox>
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{21/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${21/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{21/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${21/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${21/color} === false}" />
+                                        <Text text="{21/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${21/color2} === true}" />
+                                    </HBox>
+                                    <HBox  class="columnGray">
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{22/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${22/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{22/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${22/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${22/color} === false}" />
+                                        <Text text="{22/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${22/color2} === true}" />
+                                    </HBox>
+                                    <HBox  class="columnGray">
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{23/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${23/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{23/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${23/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${23/color} === false}" />
+                                        <Text text="{23/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${23/color2} === true}" />
+                                    </HBox>
+                                    <HBox>
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{24/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"   visible="{= ${24/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{24/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${24/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${24/color} === false}" />
+                                        <Text text="{24/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${24/color2} === true}" />
+                                    </HBox>
+                                    <HBox  class="columnGray">
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{25/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${25/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{25/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${25/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${25/color} === false}" />
+                                        <Text text="{25/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${25/color2} === true}" />
+                                    </HBox>
+                                    <HBox>
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{26/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${26/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{26/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${26/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${26/color} === false}" />
+                                        <Text text="{26/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${26/color2} === true}" />
+                                    </HBox>
+                                    <HBox  class="columnGray">
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{27/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${27/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{27/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${27/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${27/color} === false}" />
+                                        <Text text="{27/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${27/color2} === true}" />
+                                    </HBox>
+                                    <HBox>
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{28/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${28/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{28/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${28/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${28/color} === false}" />
+                                        <Text text="{28/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${28/color2} === true}" />
+                                    </HBox>
+                                    <HBox  class="columnGray">
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{29/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${29/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{29/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${29/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${29/color} === false}" />
+                                        <Text text="{29/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${29/color2} === true}" />
+                                    </HBox>
+                                    <HBox>
+                                        <!-- Elemento con cantidadEscaneada -->
+                                        <Text text="{30/cantidadEscaneada}" class="boldAndLargeText fixedWidthText"  visible="{= ${30/color} === false}"/>
+                                        <!-- Separación -->
+                                              <Label text="" width="4px" />
+                                        <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
+                                        <Text text="{30/cantidadEscaneada}"  class="redBackground  fixedWidthText boldAndLargeText" visible="{= ${30/color} === true}" />
+                                        <Text text="..."  class="greenBackground  fixedWidthText boldAndLargeText" visible="{= ${30/color} === false}" />
+                                        <Text text="{30/cantFaltante}"  class="orangeBackground  fixedWidthText boldAndLargeText " visible="{= ${30/color2} === true}" />
+                                    </HBox>
+    
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                </ScrollContainer>
+            </content>
+        <customHeader>
+            <Toolbar>
+              <ToolbarSpacer />
+              <Button  id="bDesafectar"
+                text="Desafectar Material en SAP"
+                type="Reject"
+                press="onDesafectacionPress"
+                />
+                <Button
+                text="Ver Material desafectado"
+                type="Reject"
+                press="onVerDesafectacionPress"
+                />
+            </Toolbar>
+          </customHeader>
+
+          
+    </Page>
+</mvc:View>

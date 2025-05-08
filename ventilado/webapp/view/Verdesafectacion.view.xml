@@ -1,0 +1,49 @@
+<mvc:View controllerName="ventilado.ventilado.controller.Verdesafectacion"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m"
+    xmlns:m="sap.m"
+    xmlns:l="sap.ui.layout" height="100%" width="100%">
+
+    <Page title="Cantidad de material desafectado en SAP">
+        <ScrollContainer width="100%" height="90%" horizontal="true" vertical="true">
+            <Table items="{path: '/tableData'}" fixedLayout="Strict" class="sapUiResponsiveMargin sapUiTable">
+                <headerToolbar>
+                    <OverflowToolbar>
+                        <Title text="Transporte: {/Transporte}" level="H2"/>
+                    </OverflowToolbar>
+                </headerToolbar>
+                <columns>
+                    <Column width="150px">
+                        <Text text="Entrega" class="sameHeight" wrapping="false" />
+                    </Column>
+                      <!--   
+                    <Column width="200px">
+                        <Text text="Codigo Interno" class="sameHeight" wrapping="false" />
+                    </Column>
+                    <Column width="200px">
+                        <Text text="Cantidad Escaneada" class="sameHeight" wrapping="false" />
+                    </Column> -->
+                    <Column width="100px">
+                        <Text text="Resultado" class="sameHeight" wrapping="false" />
+                    </Column>
+                    <Column width="200px">
+                        <Text text="Descripcion" class="sameHeight" wrapping="false" />
+                    </Column>
+
+                </columns>
+                <items>
+                    <ColumnListItem>
+                        <cells>
+                            <Text text="{Entrega}" class="boldAndLargeText" />
+                           <!--     <Text text="{Matnr}" class="boldAndLargeText" />
+                            <Text text="{Cantidad}" class="boldAndLargeText" /> -->
+                            <ObjectStatus icon="{path: 'Resultado', formatter: '.formatResultIcon'}" state="{path: 'Resultado', formatter: '.formatResultColor'}" />
+                            <Text text="{Descripcionerr}" class="boldAndLargeText" />
+
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </ScrollContainer>
+    </Page>
+</mvc:View>

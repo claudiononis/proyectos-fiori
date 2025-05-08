@@ -1,0 +1,368 @@
+<mvc:View controllerName="ventilado.ventilado.controller.Avance"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m"
+    xmlns:m="sap.m"
+    xmlns:l="sap.ui.layout" height="100%" width="100%">
+    <Page title="Avance por Codigo Interno">
+        
+        <ScrollContainer width="100%" height="90%" horizontal="true" >
+                    <Table items="{path: '/tableData2'}" fixedLayout="Strict" class="sapUiResponsiveMargin sapUiTable" growing="true"
+                    growingThreshold="20" growingScrollToLoad="true"  >
+                        <columns>
+                            <Column width="100px">
+                                <header>
+                                    <VBox class="sapUiTinyMarginBottom">
+                                        <Label text="Cod Prod." class="sapUiTinyMargin" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="400px">
+                                <header>
+                                    <VBox class="sapUiTinyMarginBottom">
+                                        <Label text="Desc. Producto" class="sapUiTinyMargin" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="100px">
+                                <header>
+                                    <VBox class="sapUiTinyMarginBottom">
+                                        <Label text="Total" class="sapUiTinyMargin" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="100px">
+                                <header>
+                                    <VBox class="sapUiTinyMarginBottom">
+                                        <Label text="Scan" class="sapUiTinyMargin" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="100px">
+                                <header>
+                                    <VBox class="sapUiTinyMarginBottom">
+                                        <Label text="Faltan" class="sapUiTinyMargin" />
+                                    </VBox>
+                                </header>
+                            </Column>
+ 
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/0/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/0/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/0/CantidadTotal'}, {path: '/totalesPorRuta/0/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/1/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/1/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/1/CantidadTotal'}, {path: '/totalesPorRuta/1/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/2/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/2/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/2/CantidadTotal'}, {path: '/totalesPorRuta/2/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/3/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/3/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/3/CantidadTotal'}, {path: '/totalesPorRuta/3/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/4/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/4/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/4/CantidadTotal'}, {path: '/totalesPorRuta/4/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/5/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/5/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/5/CantidadTotal'}, {path: '/totalesPorRuta/5/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/6/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/6/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/6/CantidadTotal'}, {path: '/totalesPorRuta/6/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="60px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/7/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/7/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/7/CantidadTotal'}, {path: '/totalesPorRuta/7/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/8/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/8/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/8/CantidadTotal'}, {path: '/totalesPorRuta/8/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/9/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/9/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/9/CantidadTotal'}, {path: '/totalesPorRuta/9/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/10/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/10/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/10/CantidadTotal'}, {path: '/totalesPorRuta/10/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/11/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/11/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/11/CantidadTotal'}, {path: '/totalesPorRuta/11/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/12/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/12/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/12/CantidadTotal'}, {path: '/totalesPorRuta/12/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/13/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/13/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/13/CantidadTotal'}, {path: '/totalesPorRuta/13/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/14/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/14/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/14/CantidadTotal'}, {path: '/totalesPorRuta/14/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/15/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/15/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/15/CantidadTotal'}, {path: '/totalesPorRuta/15/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/1164/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/16/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/16/CantidadTotal'}, {path: '/totalesPorRuta/16/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/17/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/17/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/17/CantidadTotal'}, {path: '/totalesPorRuta/17/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/18/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/18/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/18/CantidadTotal'}, {path: '/totalesPorRuta/18/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/19/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/1194/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/19/CantidadTotal'}, {path: '/totalesPorRuta/19/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/20/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/20/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/20/CantidadTotal'}, {path: '/totalesPorRuta/20/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/21/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/21/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/21/CantidadTotal'}, {path: '/totalesPorRuta/21/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/22/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/22/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/22/CantidadTotal'}, {path: '/totalesPorRuta/22/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/23/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/23/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/23/CantidadTotal'}, {path: '/totalesPorRuta/23/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/24/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/24/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/24/CantidadTotal'}, {path: '/totalesPorRuta/24/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/25/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/25/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/25/CantidadTotal'}, {path: '/totalesPorRuta/25/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/26/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/26/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/26/CantidadTotal'}, {path: '/totalesPorRuta/26/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/27/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/27/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/27/CantidadTotal'}, {path: '/totalesPorRuta/27/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/28/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/28/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/28/CantidadTotal'}, {path: '/totalesPorRuta/28/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>
+                            <Column width="80px">
+                                <header>
+                                    <VBox class="customColumnHeader">                                    
+                                        <Label text="{/totalesPorRuta/29/Entrega}" class="customColumnHeader sameHeight" wrapping="false" />
+                                        <Text text="{path: '/totalesPorRuta/29/CantidadTotal', formatter: '.formatCantidadTotal'}" class="sameHeight" />
+                                        <Text text="{parts: [{path: '/totalesPorRuta/29/CantidadTotal'}, {path: '/totalesPorRuta/29/Ruta'}], formatter: '.formatRuta'}" class="sameHeight" />
+                                    </VBox>
+                                </header>
+                            </Column>                           
+
+
+                        </columns>
+                        <items>
+                            <ColumnListItem>
+                                <cells>
+                                    <Text text="{CI}" class="boldAndLargeText" />
+                                    <Text text="{DESCRIPCION}" class="boldAndLargeText" />
+                                    <Text text="{TOT}" class="boldAndLargeText" />
+                                    <Text text="{SCAN}" class="boldAndLargeText" />
+                                    <Text text="{FALTA}" class="boldAndLargeText" />
+                                <!--   
+                                    <Text text="{01}" class="boldAndLargeT ext" />
+                                    <Text text="{02}" class="boldAndLargeText"  />
+                                    <Text text="{03}" class="boldAndLargeText"  />
+                                    <Text text="{04}" class="boldAndLargeText"  />
+                                    <Text text="{05}" class="boldAndLargeText"  />
+                                    <Text text="{06}" class="boldAndLargeText"  />
+                                    <Text text="{07}" class="boldAndLargeText"  />
+                                    <Text text="{08}" class="boldAndLargeText"  />
+                                    <Text text="{09}" class="boldAndLargeText"  />
+                                    <Text text="{10}" class="boldAndLargeText"  />
+                                    <Text text="{11}" class="boldAndLargeText"  />
+                                    <Text text="{12}" class="boldAndLargeText"  />
+                                    <Text text="{13}" class="boldAndLargeText"  />
+                                    <Text text="{14}" class="boldAndLargeText"  />
+                                    <Text text="{15}" class="boldAndLargeText"  />
+                                    <Text text="{16}" class="boldAndLargeText"  />
+                                    <Text text="{17}" class="boldAndLargeText"  />
+                                    <Text text="{18}" class="boldAndLargeText"  />
+                                    <Text text="{19}" class="boldAndLargeText"  />
+                                    <Text text="{20}" class="boldAndLargeText"  />  
+                                    <Text text="{21}" class="boldAndLargeText"  />
+                                    <Text text="{22}" class="boldAndLargeText"  />
+                                    <Text text="{23}" class="boldAndLargeText"  />
+                                    <Text text="{24}" class="boldAndLargeText"  />
+                                    <Text text="{25}" class="boldAndLargeText"  />
+                                    <Text text="{26}" class="boldAndLargeText"  />
+                                    <Text text="{27}" class="boldAndLargeText"  />
+                                    <Text text="{28}" class="boldAndLargeText"  />
+                                    <Text text="{29}" class="boldAndLargeText"  />
+                                    <Text text="{30}" class="boldAndLargeText"  />                                    
+                            -->
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                </ScrollContainer>
+    </Page>
+</mvc:View>

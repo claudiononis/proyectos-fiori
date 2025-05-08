@@ -1,0 +1,9 @@
+<mvc:View controllerName="tablaparametrizable.controller.View1"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m">
+    <Page id="p1" showHeader="true" title="Demo Tabla Parametrizable">
+        <content>
+            <VBox id="fragmentContainer" />
+          </content>
+      </Page>
+</mvc:View>
