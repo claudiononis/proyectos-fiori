@@ -22,13 +22,14 @@ sap.ui.define([
     var sPtoPlanif;
     var sUsuario;
     var completo;
+    var PTL_API_URL = "https://192.168.193.72:3001/api";
     var datosD = [];
     //   var sFecha; 
     var maxAdicChar2 = 0;
     return Controller.extend("ventilado.ventilado.controller.Scan2", {
 
         onInit: function () {
-
+            ctx = this;
 
             this._dbConnections = []; // Array para almacenar conexiones abiertas
             // Obtener el router y attachRouteMatched
@@ -74,12 +75,12 @@ sap.ui.define([
             // Ejecutar acciones cada vez que la ruta es navegada
             this.ejecutarAcciones();
         },
-        seRealizoDesafect: async function () { 
+        seRealizoDesafect: async function () {
             var oModel = new ODataModel("/sap/opu/odata/sap/ZVENTILADO_SRV/");
             var aFilters = [];
             aFilters.push(new Filter("Transporte", FilterOperator.EQ, localStorage.getItem('sReparto')));
             ctx = this;
-            
+
             // Crear una Promesa para manejar la respuesta asíncrona
             return new Promise((resolve, reject) => {
                 oModel.read("/zdesafectacionSet", {
@@ -100,9 +101,10 @@ sap.ui.define([
                 });
             });
         },
-        
+
         ejecutarAcciones: async function () {
             let datos = await this.obtenerDatosDeIndexedDB();
+            datosD = datos; // Guardar los datos en una variable global para su uso posterior
             //veo si esta completo el escaneo
             // Sumar el total de CantEscaneada y CantidadEntrega
             const { totalEscaneada, totalEntrega } = datos.reduce((totales, item) => {
@@ -112,7 +114,7 @@ sap.ui.define([
             }, { totalEscaneada: 0, totalEntrega: 0 });
             // Calcular la diferencia entre ambos totales
             completo = totalEntrega - totalEscaneada;
-            if (completo==0){
+            if (completo == 0) {
                 this.getView().byId("eanInput").setVisible(false);
                 this.getView().byId("parcialButton").setEnabled(false);
             }
@@ -132,27 +134,27 @@ sap.ui.define([
             this.elapsedTime = 0;
             this.intervalId = null;
             this.startTime = null;
-           
+
             var oModel = new sap.ui.model.json.JSONModel({
                 elapsedTime: 0,
                 formattedElapsedTime: "00:00:00",
                 scanState: "Stopped",
                 stateClass: "stopped",// Add initial state class
-                tableData: [] 
-               
+                tableData: []
+
             });
-     
+
             var codConfirmacionData = await this._fetchCodConfirmacionData(); // Llamar a la función para leer los Codigos de confirmacion de ruta del backend             
             oModel.setProperty("/codConfirmacionData", codConfirmacionData);
-            oModel.setProperty("/ultimoProdScan",localStorage.getItem('ultimoProdScan'));
-            oModel.setProperty("/descUltimoProdScan",localStorage.getItem('descUltimoProdScan'));
-          
+            oModel.setProperty("/ultimoProdScan", localStorage.getItem('ultimoProdScan'));
+            oModel.setProperty("/descUltimoProdScan", localStorage.getItem('descUltimoProdScan'));
+
             this.getView().setModel(oModel);
 
             // Load saved state
             var savedState = localStorage.getItem("scanState");
             var savedTime = localStorage.getItem("elapsedTime");
- 
+
             if (savedState && savedTime) {
                 oModel.setProperty("/scanState", savedState);
                 oModel.setProperty("/stateClass", this._getStateClass(savedState)); // Update class based on saved state
@@ -183,20 +185,20 @@ sap.ui.define([
 
             try {
                 var oModel = this.getView().getModel(); // Obtener el modelo de la vista
-                var sStarted ;
-              //  oModel.setProperty("/desafectacion", false)
-                if (oModel.getProperty("/isStarted")){
-                    oModel.setProperty("/isStarted", true);                   
+                var sStarted;
+                //  oModel.setProperty("/desafectacion", false)
+                if (oModel.getProperty("/isStarted")) {
+                    oModel.setProperty("/isStarted", true);
                     sStarted = true;
                 }
-                else{
+                else {
                     oModel.setProperty("/isStarted", false);
                     sStarted = false;
                 }
 
                 let datos = await this.obtenerDatosDeIndexedDB();
                 //veo si esta completo el escaneo
-                
+
 
                 let resultado = this.procesarDatos(datos);
                 //Calculo los totales para la tabla avance
@@ -227,9 +229,9 @@ sap.ui.define([
                 });
                 await this._fetchCodConfirmacionData(); // Llamar a la función para leer los Codigos de confirmacion de ruta del backend                  
                 // Actualizar el modelo con tableDataArray
-                
+
                 var codConfirmacionData = oModel.getProperty("/codConfirmacionData");
-               
+
                 oModel.setData({
                     printEtiquetas: false,
                     isStarted: sStarted,
@@ -258,9 +260,9 @@ sap.ui.define([
                     Kgbrv: '',
                     M3v: '',
                     cubTeorica: 0,
-                   
-                    scanState:oModel.getProperty("/scanState"),
-                    stateClass:oModel.setProperty("/stateClass")
+
+                    scanState: oModel.getProperty("/scanState"),
+                    stateClass: oModel.setProperty("/stateClass")
                 });
                 this.getView().setModel(oModel);
 
@@ -275,12 +277,12 @@ sap.ui.define([
 
             try {
                 let datos = await this.obtenerDatosDeIndexedDB();
-               let resultado = this.procesarDatos2(datos);
-                  //Calculo los totales para la tabla avance
+                let resultado = this.procesarDatos2(datos);
+                //Calculo los totales para la tabla avance
                 var total = 0;
                 var totalScan = 0;
                 var totalFalta = 0;
-                var totalCubTeo = 0;  
+                var totalCubTeo = 0;
                 //Recupera el estado del transporte
 
                 // Nombres de las columnas
@@ -294,16 +296,16 @@ sap.ui.define([
                     });
                     return nuevoRegistro;
                 });
-              
+
                 // Actualizar el modelo con tableDataArray
                 var oModel = this.getView().getModel(); // Obtener el modelo de la vista
                 var codConfirmacionData = oModel.getProperty("/codConfirmacionData");
-                var sStarted ;
+                var sStarted;
 
-                if (oModel.getProperty("/isStarted")){
+                if (oModel.getProperty("/isStarted")) {
                     sStarted = true;
                 }
-                else{
+                else {
                     sStarted = false;
                 }
 
@@ -340,8 +342,8 @@ sap.ui.define([
 
                 });
                 // Calcular los totales iniciales
-                oModel.setProperty("/realCubetasTotal", "Total : "+tableDataArray.reduce((sum, item) => sum + (parseFloat(item["C Real"]) || 0), 0));
-                oModel.setProperty("/realPalletsTotal" , "Total : "+tableDataArray.reduce((sum, item) => sum + (parseFloat(item["Pa"]) || 0), 0));
+                oModel.setProperty("/realCubetasTotal", "Total : " + tableDataArray.reduce((sum, item) => sum + (parseFloat(item["C Real"]) || 0), 0));
+                oModel.setProperty("/realPalletsTotal", "Total : " + tableDataArray.reduce((sum, item) => sum + (parseFloat(item["Pa"]) || 0), 0));
                 this.getView().setModel(oModel);
 
                 console.log(tableDataArray);
@@ -381,74 +383,74 @@ sap.ui.define([
         },
 
         procesarDatos: function (datos) {
-            ctx=this;
+            ctx = this;
             let resultado = {};
             var ci = this.getView().byId("edtCI");
             datos.forEach((registro) => {
                 var oModel = ctx.getView().getModel();
 
-                var cod ;
-                if (ci.getText()=='' && oModel.getProperty("/isStarted")){
+                var cod;
+                if (ci.getText() == '' && oModel.getProperty("/isStarted")) {
                     cod = ci.getText();
                 }
-                else if (ci.getText()=='' && !oModel.getProperty("/isStarted")){                                            
+                else if (ci.getText() == '' && !oModel.getProperty("/isStarted")) {
                     cod = localStorage.getItem('ultimoProdScan');
                 }
-                else if (ci.getText()!='' && oModel.getProperty("/isStarted")){                                            
+                else if (ci.getText() != '' && oModel.getProperty("/isStarted")) {
                     cod = ci.getText();
                 }
-             //if (registro.CodigoInterno  === ci.getText()) {
-              if (registro.CodigoInterno  === cod) {
+                //if (registro.CodigoInterno  === ci.getText()) {
+                if (registro.CodigoInterno === cod) {
 
-                let ruta = registro.LugarPDisp;
-                let cantidad = registro.CantidadEntrega;
-                let sCantEscaneada = registro.CantEscaneada;
-                if (!resultado[ruta]) {
-                    // Inicializa el objeto de la ruta si no existe
-                    resultado[ruta] = {
-                        "Ruta": ruta,
-                        "TOT": 0,
-                        "SCAN": 0,
-                        "FALTA": 0,
-                        "Cub TEO": registro.Cubteo,
-                        "C Real": 0,
-                        "Pa": 0,
-                        "TRANSPORTE": registro.Transporte,
-                        "ENTREGA": registro.Entrega,
-                        "CUBETA": 0,
-                        //   "TOTALCUBETA" : 0,  "Cub TEO"
-                        "PRODUCTO": 0,
-                        "KILO": 0,
-                        "M3": registro.M3teo,
-                        "CLIENTE": registro.Destinatario,
-                        "RAZONSOCIAL": registro.NombreDestinatario,
-                        "DIRECCION": registro.Calle,
-                        "LOCALIDAD": registro.LugarDestinatario,
-                        "CODIGOINTERNO": registro.CodigoInterno,
+                    let ruta = registro.LugarPDisp;
+                    let cantidad = registro.CantidadEntrega;
+                    let sCantEscaneada = registro.CantEscaneada;
+                    if (!resultado[ruta]) {
+                        // Inicializa el objeto de la ruta si no existe
+                        resultado[ruta] = {
+                            "Ruta": ruta,
+                            "TOT": 0,
+                            "SCAN": 0,
+                            "FALTA": 0,
+                            "Cub TEO": registro.Cubteo,
+                            "C Real": 0,
+                            "Pa": 0,
+                            "TRANSPORTE": registro.Transporte,
+                            "ENTREGA": registro.Entrega,
+                            "CUBETA": 0,
+                            //   "TOTALCUBETA" : 0,  "Cub TEO"
+                            "PRODUCTO": 0,
+                            "KILO": 0,
+                            "M3": registro.M3teo,
+                            "CLIENTE": registro.Destinatario,
+                            "RAZONSOCIAL": registro.NombreDestinatario,
+                            "DIRECCION": registro.Calle,
+                            "LOCALIDAD": registro.LugarDestinatario,
+                            "CODIGOINTERNO": registro.CodigoInterno,
 
-                    };
+                        };
+                    }
+
+
+                    // Suma la cantidad al total
+                    resultado[ruta]["TOT"] += cantidad;
+                    resultado[ruta]["SCAN"] = Number(sCantEscaneada);
+                    resultado[ruta]["FALTA"] = resultado[ruta]["TOT"] - resultado[ruta]["SCAN"];
+                    resultado[ruta]["CUBETA"] = "";
+                    resultado[ruta]["TOTALCUBETA"] = resultado[ruta]["TOTALCUBETA"];
+                    resultado[ruta]["PRODUCTO"] = resultado[ruta]["TOT"];
+                    resultado[ruta]["KILO"] += registro.kgbrr;
+                    resultado[ruta]["M3"] = registro.M3r;
+                    resultado[ruta]["CLIENTE"] = registro.Destinatario;
+                    resultado[ruta]["RAZONSOCIAL"] = registro.NombreDestinatario;
+                    resultado[ruta]["DIRECCION"] = registro.Calle;
+                    resultado[ruta]["LOCALIDAD"] = registro.LugarDestinatario;
+                    resultado[ruta]["C Real"] = registro.Cubre;
+                    resultado[ruta]["Pa"] = registro.Pa;
+                    resultado[ruta]["Cub TEO"] += Math.ceil(registro.M3v / 0.077);//0,077  volumen de la cubeta
                 }
-                    
-
-                // Suma la cantidad al total
-                resultado[ruta]["TOT"] += cantidad;
-                resultado[ruta]["SCAN"] += Number(sCantEscaneada);
-                resultado[ruta]["FALTA"] = resultado[ruta]["TOT"] - resultado[ruta]["SCAN"];
-                resultado[ruta]["CUBETA"] = "";
-                resultado[ruta]["TOTALCUBETA"] = resultado[ruta]["TOTALCUBETA"];
-                resultado[ruta]["PRODUCTO"] = resultado[ruta]["TOT"];
-                resultado[ruta]["KILO"] += registro.kgbrr;
-                resultado[ruta]["M3"] = registro.M3r;
-                resultado[ruta]["CLIENTE"] = registro.Destinatario;
-                resultado[ruta]["RAZONSOCIAL"] = registro.NombreDestinatario;
-                resultado[ruta]["DIRECCION"] = registro.Calle;
-                resultado[ruta]["LOCALIDAD"] = registro.LugarDestinatario;
-                resultado[ruta]["C Real"] = registro.Cubre;
-                resultado[ruta]["Pa"] = registro.Pa;
-                resultado[ruta]["Cub TEO"] += Math.ceil(registro.M3v / 0.077);//0,077  volumen de la cubeta
-             }
-            }   
-        );
+            }
+            );
 
             // Convierte el objeto resultado en un array
             let arrayResultado = Object.keys(resultado).map((ruta) => resultado[ruta]);
@@ -487,11 +489,11 @@ sap.ui.define([
 
                     };
                 }
-                    
+
 
                 // Suma la cantidad al total
                 resultado[ruta]["TOT"] += cantidad;
-                resultado[ruta]["SCAN"] += Number(sCantEscaneada);
+                resultado[ruta]["SCAN"] = Number(sCantEscaneada);
                 resultado[ruta]["FALTA"] = resultado[ruta]["TOT"] - resultado[ruta]["SCAN"];
                 // resultado[ruta]["TRANSPORTE"] = registro.Transporte ;
                 // resultado[ruta]["ENTREGA"] = registro.Entrega;
@@ -509,9 +511,9 @@ sap.ui.define([
                 resultado[ruta]["Cub TEO"] += Math.ceil(registro.M3v / 0.077);//0,077  volumen de la cubeta
 
                 // Aquí deberías agregar lógica para calcular SCAN, FALTA, Cub TEO, C Real, Pa
-             
-            }   
-        );
+
+            }
+            );
 
             // Convierte el objeto resultado en un array
             let arrayResultado = Object.keys(resultado).map((ruta) => resultado[ruta]);
@@ -611,8 +613,9 @@ sap.ui.define([
 
         /****** Inicio: Arranca proceso de  escaneo  ********************************************/
         onStartPress: function () {
-            ctx=this;
-            if (completo==0){
+            this.getView().getModel().setProperty("/estadoMensaje", "Esperando escaneo...");
+            ctx = this;
+            if (completo == 0) {
                 ctx.getView().byId("eanInput").setVisible(false);
             }
 
@@ -621,49 +624,49 @@ sap.ui.define([
             var aFilters = [];
             aFilters.push(new Filter("Transporte", FilterOperator.EQ, localStorage.getItem('sReparto')));
             ctx = this;
-           
-                oModel.read("/zdesafectacionSet", {
-                    filters: aFilters,
-                        success: function (oData) {
-                            ctx.startTime = Date.now();
-                            var oModel = ctx.getView().getModel();
-                            if(oData.results.length>0){
-                                var Input = ctx.getView().byId("eanInput");
-                                Input.setVisible(false);
-                                var Input2 = ctx.getView().byId("borrar");
-                                Input2.setVisible(false);
-                                var Input3 = ctx.getView().byId("pausa");
-                                Input3.setEnabled(false);
-                                oModel.setProperty("/isStarted", true);
-                               
-                            }
-                            /* inicia reloj*/
-                            if (ctx.intervalId) {
-                                clearInterval(ctx.intervalId);
-                            }
 
-                           
-                            oModel.setProperty("/scanState", "Running");
-                            oModel.setProperty("/stateClass", ctx._getStateClass("Running"));
+            oModel.read("/zdesafectacionSet", {
+                filters: aFilters,
+                success: function (oData) {
+                    ctx.startTime = Date.now();
+                    var oModel = ctx.getView().getModel();
+                    if (oData.results.length > 0) {
+                        var Input = ctx.getView().byId("eanInput");
+                        Input.setVisible(false);
+                        var Input2 = ctx.getView().byId("borrar");
+                        Input2.setVisible(false);
+                        var Input3 = ctx.getView().byId("pausa");
+                        Input3.setEnabled(false);
+                        oModel.setProperty("/isStarted", true);
 
-                            ctx.intervalId = setInterval(ctx._updateFormattedTime.bind(ctx), 1000);
-
-                            var oModel = ctx.getView().getModel();
-                            oModel.setProperty("/isStarted", true);
-                            var Input = ctx.getView().byId("eanInput");
-                            setTimeout(function () {
-                                Input.focus();
-                            }, 0);
-
-                            // Attach the body click event
-                            document.body.addEventListener('click', ctx._onBodyClick.bind(ctx));
-                        
-                    },
-                    error: function (oError) {
-                        console.error("Error al leer datos del servicio OData:", oError);
-                        reject(false); // Si hay un error, también podemos devolver false
                     }
-                });
+                    /* inicia reloj*/
+                    if (ctx.intervalId) {
+                        clearInterval(ctx.intervalId);
+                    }
+
+
+                    oModel.setProperty("/scanState", "Running");
+                    oModel.setProperty("/stateClass", ctx._getStateClass("Running"));
+
+                    ctx.intervalId = setInterval(ctx._updateFormattedTime.bind(ctx), 1000);
+
+                    var oModel = ctx.getView().getModel();
+                    oModel.setProperty("/isStarted", true);
+                    var Input = ctx.getView().byId("eanInput");
+                    setTimeout(function () {
+                        Input.focus();
+                    }, 0);
+
+                    // Attach the body click event
+                    document.body.addEventListener('click', ctx._onBodyClick.bind(ctx));
+
+                },
+                error: function (oError) {
+                    console.error("Error al leer datos del servicio OData:", oError);
+                    reject(false); // Si hay un error, también podemos devolver false
+                }
+            });
         },
 
         _onBodyClick: function (ctx, event) {
@@ -696,8 +699,8 @@ sap.ui.define([
                             // Verificar que sValue no sea mayor que cantidad
                             if (sValueNum <= cantidad) {
                                 ctx.getView().byId("txtCantidad").setText(sValue);
-                               //ctx.getView().byId("parcialButton").setEnabled(false);
-                                
+                                //ctx.getView().byId("parcialButton").setEnabled(false);
+
                                 var oModel = ctx.getView().getModel();
                                 oModel.setProperty("/cantidad", sValueNum); // Actualiza el modelo con el nuevo valor
                                 oDialog.close();
@@ -706,9 +709,9 @@ sap.ui.define([
                             }
                             //ctx.getView().byId("txtCantidad").setText(sValue);
                             //ctx.getView().byId("parcialButton").setEnabled(false);
-                           // var oModel = ctx.getView().getModel();
-                           // oModel.setProperty("/cantidad", Number(sValue))// actualiza el modelo con el nuevo valor
-                           // oDialog.close();
+                            // var oModel = ctx.getView().getModel();
+                            // oModel.setProperty("/cantidad", Number(sValue))// actualiza el modelo con el nuevo valor
+                            // oDialog.close();
                         } else {
                             MessageBox.error("Ingrese un valor numérico válido.");
                         }
@@ -738,6 +741,7 @@ sap.ui.define([
             this.handleEanEnter(sValue);
         },
         handleEanEnter: async function (sValue) {
+
             sValue = sValue.replace(/^0+/, '');
             // Lógica a ejecutar cuando se presiona Enter en el input del EAN
             // var cantidad = this.getView().byId("txtCantidad");
@@ -756,7 +760,7 @@ sap.ui.define([
                 // Entra un codigo y el modelo esta vacio
                 try {
                     /** vemos si el EAN es un producto */
-                    cantidadYRuta = await this.obtenerCantidadYRuta(sValue, 1);                    
+                    cantidadYRuta = await this.obtenerCantidadYRuta(sValue, 1);
                     if (cantidadYRuta.cantidad > 0) {
                         console.log("es un producto");
                         // Actualiza el modelo
@@ -772,7 +776,7 @@ sap.ui.define([
                         cantidad.setText(cantidadYRuta.cantidad);
                         sRuta.setText(cantidadYRuta.ruta);
                         descripcion.setText(cantidadYRuta.descripcion);
-                      //  Ean.setValue(cantidadYRuta.ean);
+                        //  Ean.setValue(cantidadYRuta.ean);
                         Ean.setValue("");
                         ci.setText(cantidadYRuta.ci);
                         parcialButton.setEnabled(true);
@@ -781,18 +785,19 @@ sap.ui.define([
 
                         oModel.setProperty("/ultimoProdScan", cantidadYRuta.ci);
                         oModel.setProperty("/descUltimoProdScan", cantidadYRuta.descripcion);
-                        localStorage.setItem('ultimoProdScan',cantidadYRuta.ci);
-                        localStorage.setItem('descUltimoProdScan',cantidadYRuta.descripcion);
+                        localStorage.setItem('ultimoProdScan', cantidadYRuta.ci);
+                        localStorage.setItem('descUltimoProdScan', cantidadYRuta.descripcion);
+
                         await this.obtenerYProcesarDatos();
                         this.getView().setModel(oModel);
                         var Input = ctx.getView().byId("eanInput");
                         setTimeout(function () {
                             Input.focus();
                         }, 0);
-                        
+
 
                     }
-                    else if( cantidadYRuta.cantidad == -2 ) {
+                    else if (cantidadYRuta.cantidad == -2) {
                         cantidadYRuta3 = await this.obtenerCantidadYRutaSobrante(sValue, 1);
                         if (cantidadYRuta3.cantidad > 0) {
                             console.log("es un producto");
@@ -809,17 +814,17 @@ sap.ui.define([
                             cantidad.setText(cantidadYRuta3.cantidad);
                             sRuta.setText(cantidadYRuta3.ruta);
                             descripcion.setText(cantidadYRuta3.descripcion);
-                          //  Ean.setValue(cantidadYRuta.ean);
+                            //  Ean.setValue(cantidadYRuta.ean);
                             Ean.setValue("");
                             ci.setText(cantidadYRuta3.ci);
                             parcialButton.setEnabled(true);
                             oModel.setProperty("/Kgbrv", cantidadYRuta3.Kgbrv);
                             oModel.setProperty("/M3v", cantidadYRuta.M3v);
-    
+
                             oModel.setProperty("/ultimoProdScan", cantidadYRuta3.ci);
                             oModel.setProperty("/descUltimoProdScan", cantidadYRuta3.descripcion);
-                            localStorage.setItem('ultimoProdScan',cantidadYRuta3.ci);
-                            localStorage.setItem('descUltimoProdScan',cantidadYRuta3.descripcion);
+                            localStorage.setItem('ultimoProdScan', cantidadYRuta3.ci);
+                            localStorage.setItem('descUltimoProdScan', cantidadYRuta3.descripcion);
                             await this.obtenerYProcesarDatos();
                             this.getView().setModel(oModel);
                             var Input = ctx.getView().byId("eanInput");
@@ -827,7 +832,7 @@ sap.ui.define([
                                 Input.focus();
                             }, 0);
                         }
-                        else{
+                        else {
                             var Ean = this.getView().byId("eanInput");
                             var ci = this.getView().byId("edtCI");
                             ci.setText(cantidadYRuta.ci);
@@ -845,101 +850,86 @@ sap.ui.define([
                                 }
                             });
                         }
-                    
+
                     }
                     else {
                         cantidadYRuta = await this.obtenerCantidadYRuta(sValue, 2); // no es un producto( EAN) verifica si es un CI
-                            if (cantidadYRuta.cantidad > 0) {
-                                // Actualiza el modelo
-                                console.log("es un ci");
-                                oModel.setProperty("/ruta", cantidadYRuta.ruta);
-                                oModel.setProperty("/cantidad", cantidadYRuta.cantidad);
-                                oModel.setProperty("/cantidadAEscanear", cantidadYRuta.cantidad);
-                                oModel.setProperty("/ean", cantidadYRuta.ean);
-                                oModel.setProperty("/id", cantidadYRuta.id);
-                                oModel.setProperty("/ci", cantidadYRuta.ci);
-                                oModel.setProperty("/Kgbrv", cantidadYRuta.Kgbrv);
-                                oModel.setProperty("/M3v", cantidadYRuta.M3v);
-                                // Actualiza la pantalla
-                                cantidad.setText(cantidadYRuta.cantidad);
-                                sRuta.setText(cantidadYRuta.ruta);
-                                descripcion.setText(cantidadYRuta.descripcion);
-                                //Ean.setValue(cantidadYRuta.ean);
-                                Ean.setValue("");
-                                ci.setText(cantidadYRuta.ci); 
-                                parcialButton.setEnabled(true);
+                        if (cantidadYRuta.cantidad > 0) {
+                            // Actualiza el modelo
+                            console.log("es un ci");
+                            oModel.setProperty("/ruta", cantidadYRuta.ruta);
+                            oModel.setProperty("/cantidad", cantidadYRuta.cantidad);
+                            oModel.setProperty("/cantidadAEscanear", cantidadYRuta.cantidad);
+                            oModel.setProperty("/ean", cantidadYRuta.ean);
+                            oModel.setProperty("/id", cantidadYRuta.id);
+                            oModel.setProperty("/ci", cantidadYRuta.ci);
+                            oModel.setProperty("/Kgbrv", cantidadYRuta.Kgbrv);
+                            oModel.setProperty("/M3v", cantidadYRuta.M3v);
+                            // Actualiza la pantalla
+                            cantidad.setText(cantidadYRuta.cantidad);
+                            sRuta.setText(cantidadYRuta.ruta);
+                            descripcion.setText(cantidadYRuta.descripcion);
+                            //Ean.setValue(cantidadYRuta.ean);
+                            Ean.setValue("");
+                            ci.setText(cantidadYRuta.ci);
+                            parcialButton.setEnabled(true);
 
-                                oModel.setProperty("/ultimoProdScan", cantidadYRuta.ci);
-                                oModel.setProperty("/descUltimoProdScan", cantidadYRuta.descripcion);
-                                localStorage.setItem('ultimoProdScan',cantidadYRuta.ci);
-                                localStorage.setItem('descUltimoProdScan',cantidadYRuta.descripcion);
-                                await this.obtenerYProcesarDatos();
-                                this.getView().setModel(oModel);
-                                var Input = ctx.getView().byId("eanInput");
-                                setTimeout(function () {
-                                    Input.focus();
-                                }, 0);
-                            }
-                            else { // no es ni producto ni CI, comprobar si es un codigo de confirmacion                           
-                                if (cantidadYRuta.cantidad == -1  ) {
-                                    cantidadYRuta3 = await this.obtenerCantidadYRutaSobrante(sValue, 2);
-                                    if (cantidadYRuta3.cantidad > 0) {
-                                        console.log("es un producto");
-                                        // Actualiza el modelo
-                                        oModel.setProperty("/ruta", cantidadYRuta3.ruta);
-                                        oModel.setProperty("/cantidad", cantidadYRuta3.cantidad);
-                                        oModel.setProperty("/cantidadAEscanear", cantidadYRuta3.cantidad);
-                                        oModel.setProperty("/ean", sValue);
-                                        oModel.setProperty("/id", cantidadYRuta3.id);
-                                        oModel.setProperty("/AdicChar2", cantidadYRuta.AdicChar2);
-                                        oModel.setProperty("/Kgbrv", cantidadYRuta3.Kgbrv);
-                                        oModel.setProperty("/M3v", cantidadYRuta3.M3v);
-                                        // Actualiza la pantalla
-                                        cantidad.setText(cantidadYRuta3.cantidad);
-                                        sRuta.setText(cantidadYRuta3.ruta);
-                                        descripcion.setText(cantidadYRuta3.descripcion);
-                                      //  Ean.setValue(cantidadYRuta.ean);
-                                        Ean.setValue("");
-                                        ci.setText(cantidadYRuta3.ci);
-                                        parcialButton.setEnabled(true);
-                                        oModel.setProperty("/Kgbrv", cantidadYRuta3.Kgbrv);
-                                        oModel.setProperty("/M3v", cantidadYRuta.M3v);
-                
-                                        oModel.setProperty("/ultimoProdScan", cantidadYRuta3.ci);
-                                        oModel.setProperty("/descUltimoProdScan", cantidadYRuta3.descripcion);
-                                        localStorage.setItem('ultimoProdScan',cantidadYRuta3.ci);
-                                        localStorage.setItem('descUltimoProdScan',cantidadYRuta3.descripcion);
-                                        await this.obtenerYProcesarDatos();
-                                        this.getView().setModel(oModel);
-                                        var Input = ctx.getView().byId("eanInput");
-                                        setTimeout(function () {
-                                            Input.focus();
-                                        }, 0);
-                                    }
-                                    else{
-                                        var Ean = this.getView().byId("eanInput");
-                                        var ci = this.getView().byId("edtCI");
-                                        ci.setText(cantidadYRuta.ci);
-                                        oModel.setProperty("/ultimoProdScan", cantidadYRuta.ci);
-                                        oModel.setProperty("/descUltimoProdScan", cantidadYRuta.descripcion);
-                                        console.log(" Error: Producto sobrante");
-                                        await this.obtenerYProcesarDatos();
-                                        MessageBox.error("ERROR. este producto no puede asignarse a ninguna ruta. Producto sobrante", {
-                                            title: "Error ",
-                                            styleClass: "customMessageBox", // Aplica la clase CSS personalizada
-                                            onClose: function () {
-                                                Ean.setValue('');
-                                                console.log("Mensaje de error personalizado cerrado.");
-                                            }
-                                        });
-                                    }
+                            oModel.setProperty("/ultimoProdScan", cantidadYRuta.ci);
+                            oModel.setProperty("/descUltimoProdScan", cantidadYRuta.descripcion);
+                            localStorage.setItem('ultimoProdScan', cantidadYRuta.ci);
+                            localStorage.setItem('descUltimoProdScan', cantidadYRuta.descripcion);
+                            await this.obtenerYProcesarDatos();
+                            this.getView().setModel(oModel);
+                            var Input = ctx.getView().byId("eanInput");
+                            setTimeout(function () {
+                                Input.focus();
+                            }, 0);
+                        }
+                        else { // no es ni producto ni CI, comprobar si es un codigo de confirmacion                           
+                            if (cantidadYRuta.cantidad == -1) {
+                                cantidadYRuta3 = await this.obtenerCantidadYRutaSobrante(sValue, 2);
+                                if (cantidadYRuta3.cantidad > 0) {
+                                    console.log("es un producto");
+                                    // Actualiza el modelo
+                                    oModel.setProperty("/ruta", cantidadYRuta3.ruta);
+                                    oModel.setProperty("/cantidad", cantidadYRuta3.cantidad);
+                                    oModel.setProperty("/cantidadAEscanear", cantidadYRuta3.cantidad);
+                                    oModel.setProperty("/ean", sValue);
+                                    oModel.setProperty("/id", cantidadYRuta3.id);
+                                    oModel.setProperty("/AdicChar2", cantidadYRuta.AdicChar2);
+                                    oModel.setProperty("/Kgbrv", cantidadYRuta3.Kgbrv);
+                                    oModel.setProperty("/M3v", cantidadYRuta3.M3v);
+                                    // Actualiza la pantalla
+                                    cantidad.setText(cantidadYRuta3.cantidad);
+                                    sRuta.setText(cantidadYRuta3.ruta);
+                                    descripcion.setText(cantidadYRuta3.descripcion);
+                                    //  Ean.setValue(cantidadYRuta.ean);
+                                    Ean.setValue("");
+                                    ci.setText(cantidadYRuta3.ci);
+                                    parcialButton.setEnabled(true);
+                                    oModel.setProperty("/Kgbrv", cantidadYRuta3.Kgbrv);
+                                    oModel.setProperty("/M3v", cantidadYRuta.M3v);
 
+                                    oModel.setProperty("/ultimoProdScan", cantidadYRuta3.ci);
+                                    oModel.setProperty("/descUltimoProdScan", cantidadYRuta3.descripcion);
+                                    localStorage.setItem('ultimoProdScan', cantidadYRuta3.ci);
+                                    localStorage.setItem('descUltimoProdScan', cantidadYRuta3.descripcion);
+                                    await this.obtenerYProcesarDatos();
+                                    this.getView().setModel(oModel);
+                                    var Input = ctx.getView().byId("eanInput");
+                                    setTimeout(function () {
+                                        Input.focus();
+                                    }, 0);
                                 }
-                                else if (cantidadYRuta.cantidad == -3) {
-                                    console.log(" Error no se conoce el valor ingresado");
+                                else {
                                     var Ean = this.getView().byId("eanInput");
-                                    
-                                    MessageBox.error("ERROR.El valor ingresado, no corresponde a un producto de este transporte ni a una ruta", {
+                                    var ci = this.getView().byId("edtCI");
+                                    ci.setText(cantidadYRuta.ci);
+                                    oModel.setProperty("/ultimoProdScan", cantidadYRuta.ci);
+                                    oModel.setProperty("/descUltimoProdScan", cantidadYRuta.descripcion);
+                                    console.log(" Error: Producto sobrante");
+                                    await this.obtenerYProcesarDatos();
+                                    MessageBox.error("ERROR. este producto no puede asignarse a ninguna ruta. Producto sobrante", {
                                         title: "Error ",
                                         styleClass: "customMessageBox", // Aplica la clase CSS personalizada
                                         onClose: function () {
@@ -947,9 +937,24 @@ sap.ui.define([
                                             console.log("Mensaje de error personalizado cerrado.");
                                         }
                                     });
-                                    
                                 }
+
                             }
+                            else if (cantidadYRuta.cantidad == -3) {
+                                console.log(" Error no se conoce el valor ingresado");
+                                var Ean = this.getView().byId("eanInput");
+
+                                MessageBox.error("ERROR.El valor ingresado, no corresponde a un producto de este transporte ni a una ruta", {
+                                    title: "Error ",
+                                    styleClass: "customMessageBox", // Aplica la clase CSS personalizada
+                                    onClose: function () {
+                                        Ean.setValue('');
+                                        console.log("Mensaje de error personalizado cerrado.");
+                                    }
+                                });
+
+                            }
+                        }
 
                     }
                 } catch (error) {
@@ -967,8 +972,8 @@ sap.ui.define([
                         oModel.setProperty("/ruta", 0);
 
                         oModel.setProperty("/ean", "");
-                       // oModel.setProperty("/ultimoProdScan", oModel.getProperty("/ci"));
-                       // oModel.setProperty("/descUltimoProdScan", descripcion.getText());
+                        // oModel.setProperty("/ultimoProdScan", oModel.getProperty("/ci"));
+                        // oModel.setProperty("/descUltimoProdScan", descripcion.getText());
                         oModel.setProperty("/ci", "");
                         oModel.setProperty("/descripcion", "");
                         var m3v = parseFloat(oModel.getProperty("/M3v")) || 0;
@@ -987,7 +992,7 @@ sap.ui.define([
                             // Llamar a la función para actualizar el campo 'Estado'
                             // Incrementar y asignar el nuevo valor de AdicChar2
                             maxAdicChar2 = maxAdicChar2 + 1;
-                            
+
                             // Realizar la operación matemática
                             var resultadoM3r = (m3v * scant) / cantidadAEscanear;
 
@@ -1022,12 +1027,13 @@ sap.ui.define([
                         tableData.forEach(function (registro) {
                             if (registro.Ruta === ruta) {
                                 registro.SCAN = Number(registro.SCAN) || 0;
-                                registro.SCAN += Number(scant);
+                                registro.SCAN = Number(scant);
                                 registro.FALTA = registro.FALTA - Number(scant);
                             }
                         });
                         var totalScan = oModel.getProperty("/totalScan");
-                        totalScan = totalScan + Number(scant);
+                        //totalScan = totalScan + Number(scant);
+                        totalScan = Number(scant);
                         var totalFalta = oModel.getProperty("/totalFalta");
                         totalFalta = totalFalta - Number(scant);
 
@@ -1036,6 +1042,7 @@ sap.ui.define([
                         oModel.setProperty("/totalScan", totalScan);
                         oModel.setProperty("/totalFalta", totalFalta);
                         this.getView().setModel(oModel);
+
                         var Input = ctx.getView().byId("eanInput");
                         setTimeout(function () {
                             Input.focus();
@@ -1043,9 +1050,9 @@ sap.ui.define([
                     }
 
                     else {
-                       
+
                         var Ean = this.getView().byId("eanInput");
-                       
+
                         MessageBox.error("Error : Esta confirmando en una ruta equivocada, tiene que hacelo en la ruta " + oModel.getProperty("/ruta"), {
                             title: "Error ",
                             styleClass: "customMessageBox", // Aplica la clase CSS personalizada
@@ -1058,7 +1065,7 @@ sap.ui.define([
                 }
                 else {
                     var Ean = this.getView().byId("eanInput");
-                    
+
                     MessageBox.error("Error : Tiene que ingresar un codigo de confirmacion de ruta", {
                         title: "Error ",
                         styleClass: "customMessageBox", // Aplica la clase CSS personalizada
@@ -1080,7 +1087,7 @@ sap.ui.define([
             }, { totalEscaneada: 0, totalEntrega: 0 });
             // Calcular la diferencia entre ambos totales
             completo = totalEntrega - totalEscaneada;
-            if (completo==0){
+            if (completo == 0) {
                 this.getView().byId("eanInput").setVisible(false);
                 this.getView().byId("parcialButton").setEnabled(false);
             }
@@ -1089,6 +1096,9 @@ sap.ui.define([
             oModel.setProperty("/isArrowVisible", true);
             var descripcion = this.getView().byId("lDescripcion");
             MessageToast.show("Valor ingresado: " + sValue);
+            /**** Inicio Agregado para  PTL ******** */
+            this.enviarDatosAPickToLine();
+            /********* fin */
             this.getView().setModel(oModel);
 
         },
@@ -1179,7 +1189,7 @@ sap.ui.define([
                 var data = event.target.result;// recupera el registro
                 if (data) {
                     // Actualizar el campo 'Estado'
-                    var cant2 = data.CantEscaneada + cant;
+                    var cant2 = cant;
                     data.Estado = nuevoEstado;
                     data.CantEscaneada = cant2;
                     data.AdicChar2 = AdicChar2;
@@ -1199,6 +1209,11 @@ sap.ui.define([
                             console.log("Valor actualizado del campo 'Estado':", updatedData.Estado);
 
                             ctx.oActualizarBackEnd(id, nuevoEstado, cant, AdicChar2, fechaHora, sUsuario, sPuesto, kgbrr, M3r);
+                            /* ctx.recalcularDatosDeModelo();
+                             ctx.verificarCicloCompletado();*/
+                            ctx.recalcularDatosDeModelo().then(function () {
+                                ctx.verificarCicloCompletado();
+                            });
                         };
                         verifyRequest.onerror = function (event) { // si hay un error al guardar el dato , voy x aca
                             console.log("Error al verificar el campo 'Estado':", event.target.error);
@@ -1211,6 +1226,7 @@ sap.ui.define([
                 } else {// si no se encuentra el registro voy x aca
                     console.log("No se encontró ningún registro con el Id proporcionado.");
                 }
+
             };
 
 
@@ -1453,7 +1469,7 @@ sap.ui.define([
 
         // Método para abrir el diálogo Stop
         onStopDialog: function () {
-            if (completo!=0){
+            if (completo != 0) {
 
                 var oModel = new ODataModel("/sap/opu/odata/sap/ZVENTILADO_SRV/");
                 var aFilters = [];
@@ -1499,31 +1515,31 @@ sap.ui.define([
                     }
                 });
             }
-            else{
-                  //Vemos el estado del  Transporte 
-                  var oModel = ctx.getView().getModel();
-                  //Cargamos el Dialogo  
-                  var oView = ctx.getView();
-                  if (!ctx.byId("dialogoStop")) {
-                      // load asynchronous XML fragment
-                      Fragment.load({
-                          id: oView.getId(),
-                          name: "ventilado.ventilado.view.StopDialog",
-                          controller: ctx
-                      }).then(function (oDialog) {
-                          // connect dialog to the root view 
-                          //of this component (models, lifecycle)
-                          oView.addDependent(oDialog);
-                          oDialog.open();
-                      });
-                  } else {
-                      ctx.byId("dialogoStop").open();
-                  }
+            else {
+                //Vemos el estado del  Transporte 
+                var oModel = ctx.getView().getModel();
+                //Cargamos el Dialogo  
+                var oView = ctx.getView();
+                if (!ctx.byId("dialogoStop")) {
+                    // load asynchronous XML fragment
+                    Fragment.load({
+                        id: oView.getId(),
+                        name: "ventilado.ventilado.view.StopDialog",
+                        controller: ctx
+                    }).then(function (oDialog) {
+                        // connect dialog to the root view 
+                        //of this component (models, lifecycle)
+                        oView.addDependent(oDialog);
+                        oDialog.open();
+                    });
+                } else {
+                    ctx.byId("dialogoStop").open();
+                }
             }
 
 
 
-          
+
 
         },
 
@@ -1531,26 +1547,26 @@ sap.ui.define([
             const oInput = oEvent.getSource();
             const sPath = oInput.getBindingContext().getPath(); // Obtener el índice del elemento
             const oModel = this.getView().getModel();
-            
+
             // Actualizar el valor ingresado en el modelo
             const sValue = parseFloat(oEvent.getParameter("value")) || 0;
             oModel.setProperty(sPath + "/C Real", sValue);
-        
+
             // Recalcular el total de Cubetas Reales
             const aData = oModel.getProperty("/tableData3");
             const totalCubetas = aData.reduce((sum, item) => sum + (parseFloat(item["C Real"]) || 0), 0);
             oModel.setProperty("/realCubetasTotal", "Total: " + totalCubetas);
         },
-        
+
         onPalletsChange: function (oEvent) {
             const oInput = oEvent.getSource();
             const sPath = oInput.getBindingContext().getPath(); // Obtener el índice del elemento
             const oModel = this.getView().getModel();
-        
+
             // Actualizar el valor ingresado en el modelo
             const sValue = parseFloat(oEvent.getParameter("value")) || 0;
             oModel.setProperty(sPath + "/Pa", sValue);
-        
+
             // Recalcular el total de Pallets
             const aData = oModel.getProperty("/tableData3");
             const totalPallets = aData.reduce((sum, item) => sum + (parseFloat(item["Pa"]) || 0), 0);
@@ -1674,7 +1690,7 @@ sap.ui.define([
         },
         // Método para manejar el evento afterClose del diálogo
         onStopDialogClose: function (oEvent) {
-     
+
         },
 
         /******  Llamada ejemplo al CRUD  ****************
@@ -1817,7 +1833,7 @@ sap.ui.define([
                     var sPath = sEntitySet + "(" + oEntry.Id + ")";  // Ajusta esta ruta según tu modelo OData
                     oModel.update(sPath, oEntry, {
                         success: function () {
-                          //  MessageToast.show("Registro " + oEntry.Id + " actualizado con exito.");
+                            //  MessageToast.show("Registro " + oEntry.Id + " actualizado con exito.");
                             if (onSuccess) onSuccess();
                         },
                         error: function (oError) {
@@ -1934,27 +1950,27 @@ sap.ui.define([
                         index = objectStore.index("CodigoInterno");
                     }
                     var cursorRequest = index.openCursor(IDBKeyRange.only(sKey));
-                    var resultArray = []; 
+                    var resultArray = [];
                     var codi = "";
-                    var  desc = "";
-                    cursorRequest.onsuccess = function (event) {   
+                    var desc = "";
+                    cursorRequest.onsuccess = function (event) {
                         var cursor = event.target.result;
                         if (cursor) {
-                            flag=1;
+                            flag = 1;
                             var data = cursor.value;
-                            desc= data.Descricion;
-                            codi= data.CodigoInterno;
-                            
+                            desc = data.Descricion;
+                            codi = data.CodigoInterno;
+
                             // Agregar solo los registros cuyo Estado no es "Completo" al array
                             if (data.Estado == "Completo") {
                                 resultArray.push(data);
                             }
-                        
+
                             // Avanzar al siguiente registro
                             cursor.continue();
                         } else {
                             // Si no hay más registros, proceder a ordenar y devolver el primer registro incompleto
-                            
+
                             // Ordenar el array por CodigoInterno y luego por LugarPDisp (convertido a número)
                             resultArray.sort(function (a, b) {
                                 if (a.CodigoInterno === b.CodigoInterno) {
@@ -1962,12 +1978,12 @@ sap.ui.define([
                                 }
                                 return a.CodigoInterno.localeCompare(b.CodigoInterno);
                             });
-                        
+
                             // Devolver el primer registro que no esté completo
                             for (var i = 0; i < resultArray.length; i++) {
                                 var data = resultArray[i];
                                 if (data.CantidadEntrega != data.CantEscaneada) {
-                                    var cant =data.CantidadEntrega - data.CantEscaneada;
+                                    var cant = data.CantidadEntrega - data.CantEscaneada;
                                     var result = {
                                         Cantidad: cant,
                                         Ruta: data.LugarPDisp,
@@ -1983,16 +1999,16 @@ sap.ui.define([
                                     resolve(result);
                                     return;
                                 }
-                                
+
                             }
 
-                            if (flag == 1 && busqueda == 1 ) {
+                            if (flag == 1 && busqueda == 1) {
                                 // console.log("Es un producto pero sobra");                    
                                 result = {
                                     Cantidad: -2,
                                     Ruta: 0,
                                     descripcion: desc,
-                                    id: 0,                                    
+                                    id: 0,
                                     ci: codi,
                                 };
                                 resolve(result);
@@ -2003,12 +2019,12 @@ sap.ui.define([
                                     Cantidad: -1,
                                     Ruta: 0,
                                     descripcion: desc,
-                                    id: 0,                                    
+                                    id: 0,
                                     ci: codi,
                                 };
                                 resolve(result);
                                 return;
-                            }    
+                            }
                             else if (flag == 0 && (busqueda == 1 || busqueda == 2)) {
                                 // console.log("No Es un producto ");
                                 result = {
@@ -2022,10 +2038,10 @@ sap.ui.define([
                                 resolve(result);
                                 return;
                             }
-                          
+
                         }
 
-                       
+
 
                     };
                     cursorRequest.onerror = function (event) {
@@ -2036,7 +2052,7 @@ sap.ui.define([
                     console.log("Error al abrir la base de datos:", event.target.error);
                 };
             }.bind(this));
-        }, 
+        },
         onGetData: function (key, busqueda) { // busqueda =1 busca si es un producto 
             // busqueda =2 busca si es un codigo interno
             ctx = this;
@@ -2070,27 +2086,27 @@ sap.ui.define([
                         index = objectStore.index("CodigoInterno");
                     }
                     var cursorRequest = index.openCursor(IDBKeyRange.only(sKey));
-                    var resultArray = []; 
+                    var resultArray = [];
                     var codi = "";
-                    var  desc = "";
-                    cursorRequest.onsuccess = function (event) {   
+                    var desc = "";
+                    cursorRequest.onsuccess = function (event) {
                         var cursor = event.target.result;
                         if (cursor) {
-                            flag=1;
+                            flag = 1;
                             var data = cursor.value;
-                            desc= data.Descricion;
-                            codi= data.CodigoInterno;
-                            
+                            desc = data.Descricion;
+                            codi = data.CodigoInterno;
+
                             // Agregar solo los registros cuyo Estado no es "Completo" al array
                             if (data.Estado != "Completo") {
                                 resultArray.push(data);
                             }
-                        
+
                             // Avanzar al siguiente registro
                             cursor.continue();
                         } else {
                             // Si no hay más registros, proceder a ordenar y devolver el primer registro incompleto
-                            
+
                             // Ordenar el array por CodigoInterno y luego por LugarPDisp (convertido a número)
                             resultArray.sort(function (a, b) {
                                 if (a.CodigoInterno === b.CodigoInterno) {
@@ -2098,7 +2114,7 @@ sap.ui.define([
                                 }
                                 return a.CodigoInterno.localeCompare(b.CodigoInterno);
                             });
-                        
+
                             // Devolver el primer registro que no esté completo
                             for (var i = 0; i < resultArray.length; i++) {
                                 var data = resultArray[i];
@@ -2118,16 +2134,16 @@ sap.ui.define([
                                     resolve(result);
                                     return;
                                 }
-                                
+
                             }
 
-                            if (flag == 1 && busqueda == 1 ) {
+                            if (flag == 1 && busqueda == 1) {
                                 // console.log("Es un producto pero sobra");                    
                                 result = {
                                     Cantidad: -2,
                                     Ruta: 0,
                                     descripcion: desc,
-                                    id: 0,                                    
+                                    id: 0,
                                     ci: codi,
                                 };
                                 resolve(result);
@@ -2138,12 +2154,12 @@ sap.ui.define([
                                     Cantidad: -1,
                                     Ruta: 0,
                                     descripcion: desc,
-                                    id: 0,                                    
+                                    id: 0,
                                     ci: codi,
                                 };
                                 resolve(result);
                                 return;
-                            }    
+                            }
                             else if (flag == 0 && (busqueda == 1 || busqueda == 2)) {
                                 // console.log("No Es un producto ");
                                 result = {
@@ -2157,10 +2173,10 @@ sap.ui.define([
                                 resolve(result);
                                 return;
                             }
-                          
+
                         }
 
-                       
+
 
                     };
                     cursorRequest.onerror = function (event) {
@@ -2171,7 +2187,7 @@ sap.ui.define([
                     console.log("Error al abrir la base de datos:", event.target.error);
                 };
             }.bind(this));
-        }, 
+        },
         //***** Método para abrir el diálogo en caso de errores *************/
         onOpenDialog: function (msg1, msg2, msg3) {
 
@@ -2427,7 +2443,7 @@ sap.ui.define([
             }
         },
 
-       _updateFormattedTime : function () {
+        _updateFormattedTime: function () {
             var oModel = this.getView().getModel();
             var scanState = oModel.getProperty("/scanState");
 
@@ -2454,7 +2470,7 @@ sap.ui.define([
             localStorage.setItem("scanState", scanState);
         },
 
-      
+
 
         onPause: function () {
             if (this.intervalId) {
@@ -2497,32 +2513,274 @@ sap.ui.define([
             localStorage.removeItem("scanState");
         },
         /* Navegacion   */
-        onNavToInicio: function() {
+        onNavToInicio: function () {
             this.onPause();
             var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-            oRouter.navTo("RouteView1"); 
+            oRouter.navTo("RouteView1");
         },
-        onNavToAvanceRuta: function() {
+        onNavToAvanceRuta: function () {
             this.onPause();
             var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-            oRouter.navTo("Avance2"); 
+            oRouter.navTo("Avance2");
         },
-        onNavToAvanceCodigo: function() {
+        onNavToAvanceCodigo: function () {
             this.onPause();
             var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
             oRouter.navTo("Avanceporci");
         },
-        onDesafectacion: function() {
+        onDesafectacion: function () {
             this.onPause();
             var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
             oRouter.navTo("Desconsolidado"); // 
         },
-        
-        onNavToLog: function() {
+
+        onNavToLog: function () {
             this.onPause();
             var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-            oRouter.navTo("Log"); 
-        }
+            oRouter.navTo("Log");
+        },
+
+
+        /****** funciones agregadas para PTL********** */
+        enviarDatosAPickToLine: function () {
+            ctx = this;
+            const oModel = this.getView().getModel();
+            const tableData = oModel.getProperty("/tableData") || [];
+
+            const payload = {
+                workstationId: sPuesto,
+                transporte: sReparto,
+                producto: {
+                    codigo: oModel.getProperty("/ci"),
+                    descripcion: oModel.getProperty("/descripcion")
+                },
+                rutas: tableData.map((item) => ({
+                    rutaId: item.Ruta,
+                    cantidad: item.TOT,
+                    displayId: this.obtenerDisplayId(item.Ruta, datosD)
+                }))
+            };
+
+            fetch(`${PTL_API_URL}/encender`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            })
+                .then(response => response.json())
+                .then(function (data) {
+                    if (data.status === "success") {
+                        MessageToast.show("Displays encendidos correctamente.");
+                        oModel.setProperty("/estadoMensaje", "Esperando confirmación de rutas...");
+                        ctx.iniciarPollingEstadoPTL();  // ✅ solo si encendido exitoso
+                    } else {
+                        MessageBox.error("Error al encender displays: " + data.message);
+                    }
+                }.bind(this))  // 🔧 preserve el this del controlador
+                .catch((err) => {
+                    MessageBox.error("Error de red al llamar a PickToLine API.");
+                    console.error(err);
+                });
+        },
+
+        obtenerDisplayId: function (ruta, datos) {
+            let registro = datos.find((item) => item.LugarPDisp === ruta);
+
+            if (registro) {
+                return "dsp-" + registro.Prodr.padStart(3, '0');
+            } else {
+                return "dsp-000"; // por defecto si no se encuentra
+            }
+
+        },
+
+        iniciarPollingEstadoPTL: function () {
+            ctx = this;
+            const workstationId = sPuesto;
+            const url = `${PTL_API_URL}/estado?workstationId=${workstationId}`;
+
+            // Usamos un Set para llevar registro de rutas confirmadas y evitar repetir confirmaciones
+            ctx._rutasConfirmadas = ctx._rutasConfirmadas || new Set();
+
+            // Limpiamos polling anterior si existe
+            if (ctx._pollingInterval) {
+                clearInterval(ctx._pollingInterval);
+            }
+
+            // Iniciar polling cada 3 segundos
+            ctx._pollingInterval = setInterval(function () {
+                fetch(url)
+                    .then(function (response) {
+                        if (!response.ok) {
+                            throw new Error("Error en la respuesta del polling: " + response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .then(function (data) {
+                        if (data.estado && Array.isArray(data.estado)) {
+                            data.estado.forEach(function (ruta) {
+                                if (ruta.completada && !ctx._rutasConfirmadas.has(ruta.rutaId)) {
+                                    ctx.procesarRutaConfirmadaDesdePTL(ruta);
+                                    ctx._rutasConfirmadas.add(ruta.rutaId);
+                                }
+                            });
+                        }
+                    })
+                    .catch(function (err) {
+                        console.error("Error al hacer polling:", err);
+                    });
+            }, 3000);
+        },
+        detenerPollingEstadoPTL: function () {
+            ctx = this;
+            if (ctx._pollingInterval) {
+                clearInterval(ctx._pollingInterval);
+                ctx._pollingInterval = null;
+            }
+            ctx._rutasConfirmadas = new Set();
+        },
+        /*       iniciarPollingEstadoPTL: function () {
+                   const ctx = this;
+                   const workstationId = sPuesto;
+                   const url = `${PTL_API_URL}/estado?workstationId=${workstationId}`;
+       
+                   // Usamos un Set para llevar registro de rutas confirmadas y evitar repetir confirmaciones
+                   this._rutasConfirmadas = this._rutasConfirmadas || new Set();
+       
+                   // Limpiamos polling anterior si existe
+                   if (this._pollingInterval) {
+                       clearInterval(this._pollingInterval);
+                   }
+       
+                   // Iniciar polling cada 3 segundos
+                   this._pollingInterval = setInterval(function () {
+                       fetch(url)
+                           .then(function (response) {
+                               if (!response.ok) {
+                                   throw new Error("Error en la respuesta del polling: " + response.statusText);
+                               }
+                               return response.json();
+                           })
+                           .then(function (data) {
+                               if (data.estado && Array.isArray(data.estado)) {
+                                   data.estado.forEach(function (ruta) {
+                                       if (ruta.completada && !ctx._rutasConfirmadas.has(ruta.rutaId)) {
+                                           ctx.procesarRutaConfirmadaDesdePTL(ruta);
+                                           ctx._rutasConfirmadas.add(ruta.rutaId);
+                                       }
+                                   });
+                               }
+                           })
+                           .catch(function (err) {
+                               console.error("Error al hacer polling:", err);
+                           });
+                   }, 3000);
+               },*/
+        procesarRutaConfirmadaDesdePTL: async function (ruta) {
+            ctx = this;
+            const oModel = this.getView().getModel();
+            const tableData = oModel.getProperty("/tableData") || [];
+
+            // Buscar el registro en la tabla por Ruta
+            const registro = tableData.find((item) => item.Ruta === ruta.rutaId);
+            if (!registro) {
+                console.warn("Ruta no encontrada en modelo:", ruta.rutaId);
+                return;
+            }
+
+            const cantidad = ruta.cantidadConfirmada;
+            const id = await this.buscarIdEnIndexedDBPorRuta(ruta.rutaId);  // Implementado más abajo
+            if (!id) {
+                console.warn("No se encontró ID en IndexedDB para la ruta:", ruta.rutaId);
+                return;
+            }
+
+            const m3v = parseFloat(oModel.getProperty("/M3v")) || 0;
+            const Kgbrv = parseFloat(oModel.getProperty("/Kgbrv")) || 0;
+            const cantidadAEscanear = parseInt(oModel.getProperty("/cantidadAEscanear")) || 1;
+
+            maxAdicChar2 = maxAdicChar2 + 1;
+
+            const resultadoM3r = (m3v * cantidad) / cantidadAEscanear;
+            const resultadoKgbrr = (Kgbrv * cantidad) / cantidadAEscanear;
+
+            const resultadoFormateadoM3r = resultadoM3r.toFixed(3).padStart(5, ' ');
+            const resultadoFormateadoKgbrr = resultadoKgbrr.toFixed(1).padStart(5, ' ');
+
+            const request = indexedDB.open("ventilado", 5);
+            request.onsuccess = (event) => {
+                const db = event.target.result;
+                ctx.actualizarEstado(
+                    db,
+                    id,
+                    "Completo",
+                    cantidad,
+                    String(maxAdicChar2),
+                    this.getFormattedDateTime(),
+                    resultadoFormateadoKgbrr,
+                    resultadoFormateadoM3r
+                );
+                /*  ctx.recalcularDatosDeModelo();
+                  ctx.verificarCicloCompletado();*/
+            };
+        },
+        buscarIdEnIndexedDBPorRuta: function (rutaId) {
+            const ciActual = this.byId("edtCI").getText(); // Obtener el producto actual
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open("ventilado", 5);
+                request.onsuccess = function (event) {
+                    const db = event.target.result;
+                    const transaction = db.transaction(["ventilado"], "readonly");
+                    const objectStore = transaction.objectStore("ventilado");
+
+                    objectStore.openCursor().onsuccess = (event) => {
+                        const cursor = event.target.result;
+                        if (cursor) {
+                            const value = cursor.value;
+                            if (value.LugarPDisp === rutaId && value.CodigoInterno === ciActual) {
+                                resolve(value.Id);  // Devuelve el primer ID que coincida y no esté confirmado
+                                return;
+                            }
+                            cursor.continue();
+                        } else {
+                            resolve(null); // No encontrado
+                        }
+                    };
+                };
+                request.onerror = () => reject(null);
+            });
+        },
+
+        recalcularDatosDeModelo: function () {
+            return this.obtenerDatosDeIndexedDB().then((datos) => {
+                const datosPorRuta = this.procesarDatos(datos);
+                const datosPorCI = this.procesarDatos2(datos);
+
+                const oModel = this.getView().getModel();
+                oModel.setProperty("/tableData", datosPorRuta);
+                oModel.setProperty("/tableData2", datosPorCI);
+            });
+        },
+        verificarCicloCompletado: function () {
+            const oModel = ctx.getView().getModel();
+            const tableData = oModel.getProperty("/tableData") || [];
+
+            const rutasPendientes = tableData.filter(item => item.SCAN === "0" || item.SCAN === 0);
+
+            if (rutasPendientes.length === 0) {
+                clearInterval(this._pollingInterval);
+                ctx._pollingInterval = null;
+                ctx._rutasConfirmadas = new Set();
+
+                ctx.byId("eanInput").setEnabled(true);
+                MessageToast.show("Producto confirmado en todas las rutas. Puede escanear uno nuevo.");
+                 oModel.setProperty("/ruta", 0);
+                oModel.setProperty("/estadoMensaje", "Producto confirmado en todas las rutas. Puede escanear uno nuevo.");
+            }
+        },
+
+
+
+
 
     });
 

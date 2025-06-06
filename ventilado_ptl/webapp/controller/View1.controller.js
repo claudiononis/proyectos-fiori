@@ -21,6 +21,18 @@ sap.ui.define([
     return Controller.extend("ventilado.ventilado.controller.View1", {
 
         onInit: function () {
+            // Cargar límites desde localStorage o usar por defecto
+            const oView = this.getView();
+            const limite1 = localStorage.getItem("limite1");
+            const limite2 = localStorage.getItem("limite2");
+            const usarRoll = localStorage.getItem("usarRoll");
+
+            oView.byId("limite1").setValue(limite1 !== null ? limite1 : "8");
+            oView.byId("limite2").setValue(limite2 !== null ? limite2 : "12");
+            oView.byId("usarRoll").setSelected(usarRoll === "true");
+
+
+
             this._dbConnections = []; // Array para almacenar conexiones abiertas
             var oDate = new Date();
             var oFormattedDate = this._formatDate(oDate);
@@ -95,15 +107,22 @@ sap.ui.define([
         onAvancePPress: function () {
             this.onExit();
             const oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-           // oRouter.navTo("Avance");
+            // oRouter.navTo("Avance");
             oRouter.navTo("Avanceporci");
         },
         onAvanceRutaPress: function () {
             this.onExit();
+            const oView = this.getView();
+            const limite1 = parseInt(oView.byId("limite1").getValue(), 10);
+            const limite2 = parseInt(oView.byId("limite2").getValue(), 10);
+            const usarRoll = oView.byId("usarRoll").getSelected();
+            localStorage.setItem("limite1", isNaN(limite1) ? "8" : limite1);
+            localStorage.setItem("limite2", isNaN(limite2) ? "12" : limite2);
+            localStorage.setItem("usarRoll", usarRoll ? "true" : "false");
             const oRouter = sap.ui.core.UIComponent.getRouterFor(this);
             oRouter.navTo("Avance2");
         },
-        
+
         /*  Cuando se pulsa "Buscar datos" se ejecuta esta funcion
             Se busca el modelo y se llama a la "Function import" del back end para buscar los datos  del transporte
             a ventilar.           
@@ -304,7 +323,7 @@ sap.ui.define([
                                 oData.results.forEach(function (item) {
                                     // Completando el campo "Transporte" con ceros a la izquierda si es necesario
                                     item.Transporte = (item.Transporte || '').padStart(10, '0');
-                                    
+
                                     // Guardar el item en el object store, primero elimina de LugarPDisp los ceros a la izquierda
                                     var lugarPDisp = item.LugarPDisp;
 
@@ -331,7 +350,7 @@ sap.ui.define([
                             ctx.getView().byId("btCierre").setEnabled(true);
                             ctx.getView().byId("btDesconsolidado").setEnabled(true);
                             ctx.getView().byId("btAvanceRuta").setEnabled(true);
-                            
+
                         },
                         error: function (oError) {
                             console.error("Error al leer datos del servicio OData:", oError);

@@ -1,0 +1,86 @@
+<mvc:View controllerName="ventilado.ventilado.controller.Avance"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    height="100%" width="100%">
+    <Page title="Avance por Ruta">    
+        <Button id="btScan2" text="Scan de productos" press="onNavToScan" class="buttonSpacing"/>   
+        <Button id="btConfirmarContenedores" text="Confirmar Contenedores" press="onConfirmarContenedores" type="Emphasized" class="buttonSpacing"/>
+
+        <ScrollContainer width="100%" height="90%" horizontal="true" vertical="true">
+            <Table items="{path: '/tableData'}" fixedLayout="Strict" class="sapUiResponsiveMargin sapUiTable" growing="true"
+                growingThreshold="0" growingScrollToLoad="true">
+                <columns>
+                    <Column width="100px">
+                        <header><Label text="Ruta"/></header>
+                    </Column>
+                    <Column width="200px">
+                        <header><Label text="Cliente"/></header>
+                    </Column>
+                    <Column width="150px">
+                        <header><Label text="Entrega"/></header>
+                    </Column>
+                    <Column width="100px">
+                        <header><Label text="Total"/></header>
+                    </Column>
+                    <Column width="100px">
+                        <header><Label text="Scan"/></header>
+                    </Column>
+                    <Column width="100px">
+                        <header><Label text="Faltan"/></header>
+                    </Column>
+                    <Column width="100px">
+                        <header><Label text="KgBr Teo"/></header>
+                    </Column>
+                    <Column width="100px">
+                        <header><Label text="M3 Teo"/></header>
+                    </Column>
+                    <Column width="100px">
+                        <header><Label text="Cub Teo"/></header>
+                    </Column>
+
+                    <!-- Nuevo campo: Contenedor -->
+                    <Column width="120px">
+                        <header><Label text="Contenedor"/></header>
+                    </Column>
+
+                    <!-- Nuevo campo: Display -->
+                    <Column width="120px">
+                        <header><Label text="Display"/></header>
+                    </Column>
+                </columns>
+                <items>
+                    <ColumnListItem>
+                        <cells>
+                            <Text text="{Ruta}" class="boldAndLargeText"/>
+                            <Text text="{CLIENTE}" class="boldAndLargeText"/>
+                            <Text text="{ENTREGA}" class="boldAndLargeText"/>
+                            <Text text="{TOT}" class="boldAndLargeText"/>
+                            <Text text="{SCAN}" class="boldAndLargeText"/>
+                            <HBox>
+                                <Text text="{FALTA}" class="fixedWidthText"/>
+                                <Label text="" width="4px"/>
+                                <Text text="..." class="greenBackground fixedWidthText" visible="{= ${FALTA} === 0 ? true : false}"/>
+                            </HBox>
+                            <Text text="{KILO}" class="boldAndLargeText"/>
+                            <Text text="{M3}" class="boldAndLargeText"/>
+                            <Text text="{CubTEO}" class="boldAndLargeText"/>
+
+                            <!-- Campo Contenedor -->
+                            <ComboBox selectedKey="{contenedor}" >
+                                <items>
+                                    <core:Item key="CUB" text="CUB"/>
+                                    <core:Item key="ROLL" text="ROLL"/>
+                                    <core:Item key="PALLET" text="PALLET"/>
+                                </items>
+                            </ComboBox>
+
+                            <!-- Campo Display -->
+                            <Text text="{display}" class="boldAndLargeText"/>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </ScrollContainer>
+    </Page>
+</mvc:View>

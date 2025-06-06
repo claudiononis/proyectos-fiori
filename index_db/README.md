@@ -1,83 +1,81 @@
-📦 Tabla Parametrizable SAPUI5 - Guía de reutilización
+# 📦 Modelo Fiori con IndexedDB
 
-Este proyecto contiene una tabla completamente reutilizable y configurable desde un archivo JSON, ideal para integrarla rápidamente en cualquier aplicación Fiori.
+Este proyecto es una aplicación base desarrollada en SAPUI5 (Fiori) que demuestra cómo integrar `IndexedDB` dentro de una app UI5. Puede ser utilizada como plantilla para incorporar almacenamiento local persistente en tus propios proyectos Fiori.
 
-🧩 ¿Qué incluye esta plantilla?
+---
 
-Fragmento XML reutilizable (TableTemplate.fragment.xml) con tabla UI5.
+## 🚀 ¿Para qué sirve?
 
-Modelo JSON (config.json) con definición de columnas, botones, títulos y datos.
+- Guardar datos localmente en el navegador
+- Funcionar parcialmente sin conexión
+- Mantener datos aunque el usuario recargue o cierre el navegador
 
-Controlador que construye dinámicamente columnas y botones desde el modelo.
+---
 
-🛠️ Cómo reutilizar esta tabla en otro proyecto
+## 🧩 ¿Cómo integrar esto en tu propio proyecto?
 
-1. Copiar archivos necesarios
+1. **Copiar los archivos necesarios:**
 
-Copiá los siguientes archivos a tu nuevo proyecto Fiori:
+   Desde este repositorio, copiá las siguientes partes a tu proyecto:
 
-/webapp/
-├── fragment/
-│   └── TableTemplate.fragment.xml
-├── model/
-│   └── config.json
-├── controller/
-│   └── View1.controller.js  (o integrá el contenido en tu controlador existente)
+   ```
+   /controller/Main.controller.js       ← Lógica con IndexedDB
+   /model/models.js                     ← Inicialización de modelos (ajustable)
+   /view/Main.view.xml                  ← Vista con acciones de ejemplo
+   ```
 
-2. Insertar el fragmento en tu vista XML
+2. **Incluir la inicialización de IndexedDB:**
 
-En tu vista principal (MainView.view.xml, por ejemplo):
+   Dentro del `Main.controller.js`, se crean y gestionan las conexiones con IndexedDB. Podés copiar las funciones como:
 
-<VBox id="fragmentContainer" />
+   ```javascript
+   this.db = indexedDB.open("NombreDB", 1);
+   ```
 
-3. Cargar el fragmento en el controlador
+   y adaptarlas a la estructura de datos que necesites.
 
-En tu controlador (MainView.controller.js o similar):
+3. **Adaptar la lógica a tus datos:**
 
-Pegá el código de View1.controller.js.
+   Modificá el nombre de la base, las tablas (object stores) y las claves según tus necesidades:
 
-Asegurate de tener los imports de Column, Label, Text, Button y Fragment.
+   ```javascript
+   request.onupgradeneeded = function(event) {
+     let db = event.target.result;
+     db.createObjectStore("miTabla", { keyPath: "id" });
+   };
+   ```
 
-Modificá el nombre del fragmento si cambia el namespace del nuevo proyecto.
+4. **Reutilizar funciones CRUD:**
 
-4. **Cargar el modelo de configuración en **Component.js
+   Podés extraer funciones como `agregarDato`, `leerDatos`, `borrarDato`, etc., del controlador y usarlas en cualquier parte de tu app.
 
-Agregá este código en Component.js dentro de init():
+5. **Ajustar vistas y bindings:**
 
-var oConfigModel = new sap.ui.model.json.JSONModel();
-oConfigModel.loadData("model/config.json");
-this.setModel(oConfigModel); // modelo por defecto
+   La vista XML contiene campos y botones conectados al modelo y al controlador. Solo reemplazá o adaptá los IDs y bindings según tu proyecto.
 
-5. Editar config.json para tus necesidades
+---
 
-Podés modificar:
+## 💡 Requisitos para correr
 
-🔠 title: Título de la tabla.
+- Navegador moderno con soporte para `IndexedDB`
+- SAPUI5 (versión estándar)
+- Servidor web local (Live Server, BAS, o similar)
 
-🔢 fixedColumnCount: cantidad de columnas fijas.
+---
 
-📊 columns[]: título, ancho y campo asociado de cada columna.
+## 📚 Recursos útiles
 
-🧭 toolbarButtons[]: texto, icono y función que deben llamar.
+- [IndexedDB en MDN](https://developer.mozilla.org/es/docs/Web/API/IndexedDB_API)
+- [SAPUI5 Framework](https://sapui5.hana.ondemand.com)
 
-📦 tableData[]: datos a mostrar en la tabla.
+---
 
-✅ Ventajas
+## 🧑‍💻 Autor
 
-100% flexible y mantenible.
+Desarrollado por [claudiononis](https://github.com/claudiononis) como modelo educativo.
 
-No requiere copiar código XML de tablas.
+---
 
-Columnas y botones configurables desde JSON.
+## ⚠️ Nota
 
-Se adapta fácilmente a cualquier aplicación SAPUI5/Fiori.
-
-❗ Consideraciones
-
-El modelo debe estar disponible antes de ejecutar el código que accede a /config/columns.
-
-Si vas a cargar datos desde OData o fuentes externas, deberías volver a usar attachRequestCompleted().
-
-👤 Autor / Créditos
-
-Plantilla desarrollada como parte de una iniciativa para reutilizar tablas complejas en SAP Fiori sin repetir estructuras XML.
+Este proyecto es una base funcional, pero se recomienda modularizar y aplicar validaciones antes de usar en proyectos productivos.

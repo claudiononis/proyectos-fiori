@@ -8,6 +8,17 @@
                 <Panel headerText="Informacion de Usuario" class="sapUiResponsiveMargin">
                     <VBox>
                         <HBox class="compactMargin inputSection">
+  <Label text="Límite 1:" class="inputLabel"/>
+  <Input id="limite1" type="Number" value="8" class="inputField"/>
+</HBox>
+<HBox class="compactMargin inputSection">
+  <Label text="Límite 2:" class="inputLabel"/>
+  <Input id="limite2" type="Number" value="12" class="inputField"/>
+</HBox>
+<HBox class="compactMargin inputSection">
+  <CheckBox id="usarRoll" selected="false" text="Usar Roll Container"/>
+</HBox>
+                        <HBox class="compactMargin inputSection">
                             <Label text="Puesto:" class="inputLabel"/>
                             <Input id="puesto" class="inputField" required="true"/>
                         </HBox>

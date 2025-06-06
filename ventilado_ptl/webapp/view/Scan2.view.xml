@@ -17,7 +17,7 @@
                             <Text text="{/formattedElapsedTime}" class="timer" />
                         </VBox>
                     </HBox> -->
-                     <!-- Botones para navegar -->
+                    <!-- Botones para navegar -->
                     <HBox>
                         <Button text="Avance por Codigo" press="onNavToAvanceCodigo" class="buttonSpacing" />
                         <Button text="Avance por Ruta" press="onNavToAvanceRuta" class="buttonSpacing"/>
@@ -40,14 +40,16 @@
 
                     <HBox class="inputSection">
                         <Label id="lEan" text="EAN / Cod.Int" class="label" />
-                        <Input id="eanInput" enabled="{/isStarted}"  class="inputEan" submit="onEanInputSubmit" />
-                        <Button id="borrar" icon="sap-icon://delete" press="onClearEanInput" class="clearButton buttonSpacing" /> 
+                        <Input id="eanInput" enabled="{/isStarted}" class="inputEan" submit="onEanInputSubmit" />
+                        <Button id="borrar" icon="sap-icon://delete" press="onClearEanInput" class="clearButton buttonSpacing" />
                         <Button id="parcialButton" text="Parcial" press="onParcialPress" enabled="false" />
                         <Button id="btCi2" enabled="false" text="COD. INTERNO" type="Reject" press="onOpenCodeInputDialog" class="button" />
                         <Label id="edtCI" text="" class="inputCodigoIntern" width="100px" />
                         <Label id="lDescripcion" text="" class="inputDescripcion" />
                     </HBox>
-
+                    <HBox class="inputSection">
+                        <Text id="estadoMensaje" text="{/estadoMensaje}" class="estadoMensaje" visible="true" wrapping="true" />
+                    </HBox>
                     <HBox class="spSection">
                         <VBox class="spBox">
                             <HBox class="spSection">
@@ -68,8 +70,7 @@
                 <!-- FlexBox para la tabla -->
                 <VBox class="rightPane">
                     <ScrollContainer class="tableContainer" vertical="true" height="100%">
-                        <Table id="customTableAvance" items="{path: '/tableData'}" width="100%" growing="true"
-                        growingThreshold="20" growingScrollToLoad="true">
+                        <Table id="customTableAvance" items="{path: '/tableData'}" width="100%" growing="true" growingThreshold="20" growingScrollToLoad="true">
                             <headerToolbar>
                                 <OverflowToolbar>
                                     <VBox>
@@ -93,7 +94,7 @@
                                     <header>
                                         <VBox>
                                             <Text text="TOT" />
-                                            <Text text="{=${/totalP}}"  class="boldAndLargeText fixedWidthText"  />
+                                            <Text text="{=${/totalP}}" class="boldAndLargeText fixedWidthText" />
                                         </VBox>
                                     </header>
                                 </Column>
@@ -101,7 +102,7 @@
                                     <header>
                                         <VBox>
                                             <Text text="SCAN" />
-                                            <Text text="{=${/totalScan}}"  class="boldAndLargeText fixedWidthText" />
+                                            <Text text="{=${/totalScan}}" class="boldAndLargeText fixedWidthText" />
                                         </VBox>
                                     </header>
                                 </Column>
@@ -109,11 +110,11 @@
                                     <header>
                                         <VBox>
                                             <Text text="FALTA" />
-                                            <Text text="{=${/totalFalta}}"  class="boldAndLargeText fixedWidthText" />
+                                            <Text text="{=${/totalFalta}}" class="boldAndLargeText fixedWidthText" />
                                         </VBox>
                                     </header>
                                 </Column>
-                               <!-- <Column>
+                                <!-- <Column>
                                    <header>
                                         <VBox>
                                             <Text text="Cub TEO" />
@@ -132,16 +133,16 @@
                                             <Text text="{SCAN}" class="boldAndLargeText fixedWidthText" />
                                             <!-- Separación -->
                                             <Label text="" width="4px" />
-                                            <Text text="..."  class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${SCAN} > 0 ? true : false}" />
+                                            <Text text="..." class="greenBackground fixedWidthText boldAndLargeText" visible="{= ${SCAN} > 0 ? true : false}" />
                                         </HBox>
-                                        <HBox>   
+                                        <HBox>
                                             <Text text="{FALTA}" class="boldAndLargeText fixedWidthText boldAndLargeText" />
                                             <!-- Separación -->
                                             <Label text="" width="4px" />
                                             <!-- Indicador en rojo y verde, asociado a una variable del modelo -->
-                                            <Text text=""  class="redBackground fixedWidthText boldAndLargeText" visible="{= ${FALTA} > 0 ? true : false}" />                                           
-                                        </HBox>    
-                                      <!--   <Text text="{Cub TEO}" class="boldAndLargeText" /> -->
+                                            <Text text="" class="redBackground fixedWidthText boldAndLargeText" visible="{= ${FALTA} > 0 ? true : false}" />
+                                        </HBox>
+                                        <!--   <Text text="{Cub TEO}" class="boldAndLargeText" /> -->
                                     </cells>
                                 </ColumnListItem>
                             </items>
