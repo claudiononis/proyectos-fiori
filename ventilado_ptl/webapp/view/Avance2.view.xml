@@ -67,7 +67,7 @@
                             <Text text="{CubTEO}" class="boldAndLargeText"/>
 
                             <!-- Campo Contenedor -->
-                            <ComboBox selectedKey="{contenedor}" >
+                            <ComboBox selectedKey="{contenedor}" change=".onChangeContenedor">
                                 <items>
                                     <core:Item key="CUB" text="CUB"/>
                                     <core:Item key="ROLL" text="ROLL"/>

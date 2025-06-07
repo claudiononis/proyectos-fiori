@@ -7,8 +7,9 @@ sap.ui.define([
     "sap/ui/model/odata/v2/ODataModel",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
+    "sap/ui/core/Fragment",
 
-], function (UIComponent, Controller, MessageToast, MessageBox, BusyIndicator, ODataModel, Filter, FilterOperator) {
+], function (UIComponent, Controller, MessageToast, MessageBox, BusyIndicator, ODataModel, Filter, FilterOperator, Fragment) {
     "use strict";
     var ctx;
     var sPreparador;
@@ -47,6 +48,13 @@ sap.ui.define([
             // Obtener el router y añadir la función para el evento routeMatched
             var oRouter = UIComponent.getRouterFor(this);
             oRouter.getRoute("RouteView1").attachPatternMatched(this.onRouteMatched, this);
+
+            const oConfigModel = new sap.ui.model.json.JSONModel({
+                listaDisplaysCol1: [],
+                listaDisplaysCol2: [],
+                displaysDesactivados: []
+            });
+            this.getView().setModel(oConfigModel, "configModel");
         },
 
 
@@ -373,7 +381,102 @@ sap.ui.define([
         },
         _handleUnload: function () {
             this.closeAllDbConnections();
+        },
+        onAceptarDisplays: function () {
+            const oList = this.byId("listaDisplays");
+            const aSelectedItems = oList.getSelectedItems();
+
+            const displaysSeleccionados = aSelectedItems.map(item => item.getTitle());
+
+            console.log("Displays desactivados:", displaysSeleccionados);
+
+            // Podés guardar en el modelo, en el backend o en localStorage
+            this._oDialogDisplays.close();
+        },
+        /*  onConfigurarDisplaysDañados: function () {
+              const oView = this.getView();
+              const oModel = oView.getModel("configModel");
+  
+              // Ejemplo: lista de displays cargada manualmente (puede venir de backend)
+              const displays = [
+                  { nombre: "Display 1" },
+                  { nombre: "Display 2" },
+                  { nombre: "Display 3" },
+                  { nombre: "Display 4" }
+              ];
+              oModel.setProperty("/listaDisplays", displays);
+              // Solo cargamos el fragment una vez
+              if (!this._oDialogDisplays) {
+                  Fragment.load({
+                      name: "ventilado.ventilado.view.SeleccionDisplays", // ⚠️ AJUSTÁ el path correcto
+                      controller: this
+                  }).then((oDialog) => {
+                      this._oDialogDisplays = oDialog;
+                      oView.addDependent(oDialog);
+                      this._oDialogDisplays.open();
+                  });
+              } else {
+                  this._oDialogDisplays.open();
+              }
+  
+  
+              
+          },*/
+        onConfigurarDisplaysDañados: function () {
+            ctx=this;
+            const oView = this.getView();
+            const oModel = oView.getModel("configModel");
+
+            // Generar 30 displays
+            const allDisplays = [];
+            for (let i = 1; i <= 30; i++) {
+                const nombre = "DSP-" + String(i).padStart(3, "0");
+                allDisplays.push({ nombre });
+            }
+
+            // Dividir en 2 columnas
+            const col1 = allDisplays.slice(0, 15);
+            const col2 = allDisplays.slice(15);
+
+            oModel.setProperty("/listaDisplaysCol1", col1);
+            oModel.setProperty("/listaDisplaysCol2", col2);
+
+            if (!ctx._oDialogDisplays) {
+                Fragment.load({
+                    name: "ventilado.ventilado.view.SeleccionDisplays", // Cambiá por tu namespace
+                    controller: this
+                }).then((oDialog) => {
+                    ctx._oDialogDisplays = oDialog;
+                    oView.addDependent(oDialog);
+                    // 👇 Forzar modelo al Dialog si hace falta
+                    oDialog.setModel(oModel, "configModel");
+                    ctx._oDialogDisplays.open();
+                });
+            } else {
+                ctx._oDialogDisplays.open();
+            }
+        },
+
+        onAceptarDisplays: function () {
+            const oList1 = this.byId("listaDisplaysCol1");
+            const oList2 = this.byId("listaDisplaysCol2");
+
+            const aSelectedItems1 = oList1.getSelectedItems();
+            const aSelectedItems2 = oList2.getSelectedItems();
+
+            const seleccionados = [
+                ...aSelectedItems1.map(item => item.getTitle()),
+                ...aSelectedItems2.map(item => item.getTitle())
+            ];
+
+            const oModel = this.getView().getModel("configModel");
+            oModel.setProperty("/displaysDesactivados", seleccionados);
+
+            console.log("Displays desactivados:", seleccionados);
+
+            this._oDialogDisplays.close();
         }
+
 
     });
 });

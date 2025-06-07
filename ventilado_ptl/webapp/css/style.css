@@ -426,3 +426,6 @@
 .customTableHeight {
     height: 90%; /* Altura de la tabla ajustada al 90% */
 }
+.sapUiSizeCompact .sapMPanel {
+    height: 100% !important;
+}

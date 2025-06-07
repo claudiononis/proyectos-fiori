@@ -27,17 +27,36 @@ sap.ui.define([
 
   return Controller.extend("ventilado.ventilado.controller.Desconsolidado", {
     onInit: function () {
-
       this._dbConnections = [];
-      var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+
+      // 🟢 CREAR Y SETEAR EL MODELO ANTES DE TODO
+      const oModel = new sap.ui.model.json.JSONModel({
+        tableData: [],
+        tableData2: [],
+        displaysNoDisponibles: [],
+        totalCantidadAsig: 0,
+        totalTot: 0,
+        totalScan: 0,
+        totalFaltan: 0,
+        totalKilo: 0,
+        totalM3: 0,
+        totalCubTeo: 0
+      });
+      this.getView().setModel(oModel);
+
+      // 🔁 Conectar a la ruta y cargar datos
+      const oRouter = sap.ui.core.UIComponent.getRouterFor(this);
       oRouter.getRoute("Avance2").attachMatched(this.onRouteMatched, this);
+
       window.addEventListener("beforeunload", this._handleUnload.bind(this));
       window.addEventListener("popstate", this._handleUnload.bind(this));
 
+      // Cargar los datos DESPUÉS de tener modelo listo
       this.ejecutarAcciones().catch((error) => {
         console.error("Error al ejecutar acciones iniciales:", error);
       });
     },
+
 
     onRouteMatched: function () {
       this.ejecutarAcciones().catch((error) => {
@@ -46,25 +65,26 @@ sap.ui.define([
     },
 
     ejecutarAcciones: function () {
+      ctx = this;
       sPuesto = localStorage.getItem("sPuesto");
       sReparto = localStorage.getItem("sReparto");
       sPtoPlanif = localStorage.getItem("sPtoPlanif");
       sUsuario = localStorage.getItem("sPreparador");
-      this.getView().byId("btScan2").setEnabled(false);
-      var oModel = new sap.ui.model.json.JSONModel();
-      this.getView().setModel(oModel);
+     // this.getView().byId("btScan2").setEnabled(false);
+      //  var oModel = new sap.ui.model.json.JSONModel();
+      // this.getView().setModel(oModel);
 
       return this.obtenerYProcesarDatos()
         .then(() => {
-          const totalTot = this.datosD.reduce((total, item) => total + (item.TOT || 0), 0);
-          const totalScan = this.datosD.reduce((total, item) => total + (item.SCAN || 0), 0);
-          const totalFaltan = this.datosD.reduce((total, item) => total + (item.FALTA || 0), 0);
+          const totalTot = ctx.datosD.reduce((total, item) => total + (item.TOT || 0), 0);
+          const totalScan = ctx.datosD.reduce((total, item) => total + (item.SCAN || 0), 0);
+          const totalFaltan = ctx.datosD.reduce((total, item) => total + (item.FALTA || 0), 0);
           const totalKilo = parseFloat(this.datosD.reduce((total, item) => total + (parseFloat(item.KILO) || 0), 0).toFixed(1));
           const totalM3 = parseFloat(this.datosD.reduce((total, item) => total + (parseFloat(item.M3) || 0), 0).toFixed(3));
-          const totalCubTeo = this.datosD.reduce((total, item) => total + (item.CubTEO || 0), 0);
+          const totalCubTeo = ctx.datosD.reduce((total, item) => total + (item.CubTEO || 0), 0);
 
           // Asignar contenedor automático solo si no existe
-          this.datosD.forEach(item => {
+          ctx.datosD.forEach(item => {
             if (!item.contenedor) {
               item.contenedor = this.determinarContenedor(item.CubTEO);
             }
@@ -76,9 +96,9 @@ sap.ui.define([
           const limite2 = parseInt(localStorage.getItem("limite2")) || 12;
           const usarRoll = localStorage.getItem("usarRoll") === "true";
 
-          this.datosD = this.asignarContenedoresYDisplays(this.datosD, limite1, limite2, usarRoll);
-          /********* */
-          if (this.excedioLimiteDisplays(this.datosD)) {
+          ctx.datosD = this.asignarContenedoresYDisplays(ctx.datosD, limite1, limite2, usarRoll,false,false);
+
+          if (ctx.excedioLimiteDisplays(this.datosD)) {
             const oView = this.getView();
 
             const inputLimite1 = new sap.m.Input({
@@ -121,9 +141,9 @@ sap.ui.define([
                   const recalculado = this.asignarContenedoresYDisplays(this.datosD, nuevoL1, nuevoL2, nuevoUsarRoll);
                   const excedeAhora = this.excedioLimiteDisplays(recalculado);
 
-                  this.datosD = recalculado;
-                  this.getView().getModel().setProperty("/tableData", recalculado);
-                  this.getView().byId("btConfirmarContenedores").setEnabled(!excedeAhora);
+                  ctx.datosD = recalculado;
+                  ctx.getView().getModel().setProperty("/tableData", recalculado);
+                  ctx.getView().byId("btConfirmarContenedores").setEnabled(!excedeAhora);
                   //this.getView().byId("btScan2").setEnabled(!excedeAhora);
 
                   if (excedeAhora) {
@@ -153,24 +173,19 @@ sap.ui.define([
             oView.byId("btScan2").setEnabled(false);
           }
 
-          /******** */
 
-          var oModel = new sap.ui.model.json.JSONModel({
-            tableData: this.datosD,
-            tableData2: this.datosD2,
-            totalCantidadAsig: this.datosD.reduce((total, item) => total + (item.cantidadAsig || 0), 0),
-            totalTot: totalTot,
-            totalScan: totalScan,
-            totalFaltan: totalFaltan,
-            totalKilo: totalKilo,
-            totalM3: totalM3,
-            totalCubTeo: totalCubTeo,
-            contenedor: "", // Inicializa como vacío o usa la lógica de determinación
-            display: "",
 
-          });
+          const oModel = this.getView().getModel();
+          oModel.setProperty("/tableData", ctx.datosD);
+          oModel.setProperty("/tableData2", ctx.datosD2);
+          oModel.setProperty("/totalCantidadAsig", ctx.datosD.reduce((total, item) => total + (item.cantidadAsig || 0), 0));
+          oModel.setProperty("/totalTot", totalTot);
+          oModel.setProperty("/totalScan", totalScan);
+          oModel.setProperty("/totalFaltan", totalFaltan);
+          oModel.setProperty("/totalKilo", totalKilo);
+          oModel.setProperty("/totalM3", totalM3);
+          oModel.setProperty("/totalCubTeo", totalCubTeo);
 
-          this.getView().setModel(oModel);
         })
         .catch((error) => {
           console.error("Error al obtener y procesar datos:", error);
@@ -221,43 +236,99 @@ sap.ui.define([
 
       return data;
     },
+    /* onChangeContenedor: function (oEvent) {
+       // Obtener el ComboBox
+       var oComboBox = oEvent.getSource();
+ 
+       // Obtener el contenedor seleccionado
+       var sContenedor = oComboBox.getSelectedKey();
+ 
+       if (!sContenedor) {
+         console.error("No se pudo obtener el contenedor seleccionado.");
+         return;
+       }
+ 
+       // Obtener el contexto de enlace y el modelo
+       var oBindingContext = oEvent.getSource().getBindingContext();
+       var oModel = this.getView().getModel();
+       var oData = oBindingContext.getObject();
+ 
+       // Actualizar el contenedor seleccionado en el objeto vinculado al modelo
+       oData.contenedor = sContenedor;
+ 
+       // Actualizar el modelo con el nuevo valor del contenedor
+       oModel.setProperty(oBindingContext.getPath() + "/contenedor", sContenedor);
+ 
+       // Obtener todos los datos actualizados desde el modelo
+       var aFullData = oModel.getProperty("/tableData");
+ 
+       // Recalcular todos los displays
+       aFullData = this.calcularDisplays(aFullData);
+ 
+       // Actualizar el modelo con los nuevos displays
+       oModel.setProperty("/tableData", aFullData);
+ 
+       // Refrescar la UI
+       oModel.refresh();
+     },*/
     onChangeContenedor: function (oEvent) {
-      // Obtener el ComboBox
-      var oComboBox = oEvent.getSource();
+      const oComboBox = oEvent.getSource();
+      const sNuevoContenedor = oComboBox.getSelectedKey();
+      if (!sNuevoContenedor) return;
 
-      // Obtener el contenedor seleccionado
-      var sContenedor = oComboBox.getSelectedKey();
+      const oModel = this.getView().getModel();
+      const oContextData = oComboBox.getBindingContext().getObject();
+      const idRuta = oContextData.Ruta;
 
-      if (!sContenedor) {
-        console.error("No se pudo obtener el contenedor seleccionado.");
-        return;
-      }
+      let aData = JSON.parse(JSON.stringify(oModel.getProperty("/tableData")));
 
-      // Obtener el contexto de enlace y el modelo
-      var oBindingContext = oEvent.getSource().getBindingContext();
-      var oModel = this.getView().getModel();
-      var oData = oBindingContext.getObject();
+      // ✅ Actualizar la ruta correcta por ID (no por índice)
+      aData.forEach(item => {
+        if (item.Ruta === idRuta) {
+          item.contenedor = sNuevoContenedor;
+        }
+      });
 
-      // Actualizar el contenedor seleccionado en el objeto vinculado al modelo
-      oData.contenedor = sContenedor;
+      // Reordenar
+      const tipoOrden = { "CUB": 1, "PALLET": 2, "ROLL": 3 };
+      aData.sort((a, b) => {
+        if (tipoOrden[a.contenedor] !== tipoOrden[b.contenedor]) {
+          return tipoOrden[a.contenedor] - tipoOrden[b.contenedor];
+        }
+        return parseInt(a.Ruta) - parseInt(b.Ruta);
+      });
 
-      // Actualizar el modelo con el nuevo valor del contenedor
-      oModel.setProperty(oBindingContext.getPath() + "/contenedor", sContenedor);
+      // Recalcular displays
+      const limite1 = parseInt(localStorage.getItem("limite1")) || 8;
+      const limite2 = parseInt(localStorage.getItem("limite2")) || 12;
+      const usarRoll = localStorage.getItem("usarRoll") === "true";
+      const aRecalculado = this.asignarContenedoresYDisplays(
+        aData,
+        limite1,
+        limite2,
+        usarRoll,
+        true, // <- respetarContenedorManual
+        true // no ordenar
+      );
 
-      // Obtener todos los datos actualizados desde el modelo
-      var aFullData = oModel.getProperty("/tableData");
+      // Forzar cambio de foco
+      oModel.setProperty("/tableData", []);
+      sap.ui.getCore().applyChanges();
 
-      // Recalcular todos los displays
-      aFullData = this.calcularDisplays(aFullData);
+      setTimeout(() => {
+        oModel.setProperty("/tableData", aRecalculado);
 
-      // Actualizar el modelo con los nuevos displays
-      oModel.setProperty("/tableData", aFullData);
+        const oTable = this.getView().byId("miTabla");
+        oTable.bindItems("/tableData", oTable.getBindingInfo("items").template);
 
-      // Refrescar la UI
-      oModel.refresh();
+        const excede = this.excedioLimiteDisplays(aRecalculado);
+        this.getView().byId("btConfirmarContenedores").setEnabled(!excede);
+        this.getView().byId("btScan2").setEnabled(false);
+      }, 0);
     },
+
     onConfirmarContenedores: function () {
-      var ctx=this;
+      var ctx = this;
       var oModel = this.getView().getModel();
       var aFullData = oModel.getProperty("/tableData");
 
@@ -272,7 +343,7 @@ sap.ui.define([
           })
         ).then(() => {
           MessageToast.show("Datos actualizados correctamente en el backend");
-           ctx.getView().byId("btScan2").setEnabled(true);
+          ctx.getView().byId("btScan2").setEnabled(true);
         }).catch((error) => {
           MessageBox.error("Error al actualizar el backend: " + error);
         });
@@ -475,37 +546,7 @@ sap.ui.define([
           return ""; // Valor predeterminado si no coincide
       }
     },
-    /* actualizarBackend: function (id, contenedor, display) {
-      return new Promise((resolve, reject) => {
-        // Crear el modelo OData
-        var oModel = new sap.ui.model.odata.v2.ODataModel("/sap/opu/odata/sap/ZVENTILADO_SRV/");
 
-        // Construir la ruta para el registro específico
-        var sPath = "/ventiladoSet(" + id + ")";
-
-        // Mapear contenedor y display a formatos abreviados
-        var sPRODV = this.mapearContenedorParaBackend(contenedor); // CU, RO, PA
-        var sPRODR = this.mapearDisplayParaBackend(display);       // 001, 002
-
-        // Datos a actualizar
-        var oPayload = {
-          PRODV: sPRODV, // Guardar el contenedor en PRODV
-          PRODR: sPRODR  // Guardar el display en PRODR
-        };
-
-        // Actualizar el backend
-        oModel.update(sPath, oPayload, {
-          success: function () {
-            console.log("Backend actualizado con éxito.");
-            resolve();
-          },
-          error: function (oError) {
-            console.error("Error al actualizar el backend:", oError);
-            reject(oError);
-          }
-        });
-      });
-    },*/
     actualizarBackend: function (id, contenedor, display) {
       var sPRODV = this.mapearContenedorParaBackend(contenedor);
       var sPRODR = this.mapearDisplayParaBackend(display);
@@ -543,41 +584,46 @@ sap.ui.define([
     oActualizarBackEnd: function (datos) {
       this.crud("ACTUALIZAR", datos);
     },
-    asignarContenedoresYDisplays: function (aData, limite1, limite2, usarRoll) {
-      // Paso 1: Asignar tipo de contenedor
+
+    asignarContenedoresYDisplays: function (aData, limite1, limite2, usarRoll, respetarContenedorManual, skipSort) {
+
+      const indisponibles = this.getView().getModel().getProperty("/displaysNoDisponibles") || [];
       aData.forEach(item => {
-        if (item.CubTEO <= limite1) {
-          item.contenedor = "CUB";
-        } else if (item.CubTEO > limite2 || !usarRoll) {
-          item.contenedor = "PALLET";
-        } else {
-          item.contenedor = "ROLL";
+        if (!respetarContenedorManual || !item.contenedor) {
+          if (item.CubTEO <= limite1) {
+            item.contenedor = "CUB";
+          } else if (item.CubTEO > limite2 || !usarRoll) {
+            item.contenedor = "PALLET";
+          } else {
+            item.contenedor = "ROLL";
+          }
         }
       });
-
-      // Paso 2: Ordenar por tipo de contenedor y ruta numérica
-      const tipoOrden = { "CUB": 1, "PALLET": 2, "ROLL": 3 };
-      aData.sort((a, b) => {
-        if (tipoOrden[a.contenedor] !== tipoOrden[b.contenedor]) {
-          return tipoOrden[a.contenedor] - tipoOrden[b.contenedor];
-        }
-        return parseInt(a.Ruta) - parseInt(b.Ruta);
-      });
-
-      // Paso 3: Asignar display sin cruzar módulos (cada módulo tiene 6 posiciones)
+      if (!skipSort) {
+        const tipoOrden = { "CUB": 1, "PALLET": 2, "ROLL": 3 };
+        aData.sort((a, b) => {
+          if (tipoOrden[a.contenedor] !== tipoOrden[b.contenedor]) {
+            return tipoOrden[a.contenedor] - tipoOrden[b.contenedor];
+          }
+          return parseInt(a.Ruta) - parseInt(b.Ruta);
+        });
+      }
       let posicion = 1;
       const posicionesPorModulo = 6;
 
       aData.forEach(item => {
-        const espacios = item.contenedor === "CUB" ? 1 :
-          item.contenedor === "ROLL" ? 2 :
-            item.contenedor === "PALLET" ? 3 : 1;
-
+        const espacios = item.contenedor === "CUB" ? 1 : item.contenedor === "ROLL" ? 2 : 3;
         let moduloActual = Math.ceil(posicion / posicionesPorModulo);
         let moduloFinal = Math.ceil((posicion + espacios - 1) / posicionesPorModulo);
 
-        if (moduloActual !== moduloFinal) {
-          posicion = (moduloActual * posicionesPorModulo) + 1;
+        // buscar próximo display disponible
+        while (
+          moduloActual !== moduloFinal ||
+          indisponibles.includes("dsp-" + ("000" + posicion).slice(-3))
+        ) {
+          posicion++;
+          moduloActual = Math.ceil(posicion / posicionesPorModulo);
+          moduloFinal = Math.ceil((posicion + espacios - 1) / posicionesPorModulo);
         }
 
         item.display = "dsp-" + ("000" + posicion).slice(-3);
@@ -586,6 +632,7 @@ sap.ui.define([
 
       return aData;
     },
+
 
     // ✅ Nueva función para validar si se excede el límite de displays
     excedioLimiteDisplays: function (aData) {
@@ -598,7 +645,38 @@ sap.ui.define([
         }
       }, 0);
       return totalEspacios > 30;
-    }
+    },
+    // ✅ NUEVO MÉTODO en Avance.controller.js
+    onConfigurarDisplaysDañados: function () {
+      const oView = this.getView();
+      const aNoDisponibles = oView.getModel().getProperty("/displaysNoDisponibles") || [];
+
+      const checkboxes = [];
+      for (let i = 1; i <= 30; i++) {
+        const dsp = "dsp-" + ("000" + i).slice(-3);
+        checkboxes.push(new sap.m.CheckBox({
+          text: dsp,
+          selected: aNoDisponibles.includes(dsp)
+        }));
+      }
+
+      const dialog = new sap.m.Dialog({
+        title: "Displays no disponibles",
+        content: new sap.m.VBox({ items: checkboxes }),
+        beginButton: new sap.m.Button({
+          text: "Guardar",
+          press: () => {
+            const seleccionados = checkboxes.filter(cb => cb.getSelected()).map(cb => cb.getText());
+            oView.getModel().setProperty("/displaysNoDisponibles", seleccionados);
+            dialog.close();
+          }
+        }),
+        endButton: new sap.m.Button({ text: "Cancelar", press: () => dialog.close() }),
+        afterClose: () => dialog.destroy()
+      });
+
+      dialog.open();
+    },
 
   });
 });  

@@ -1,0 +1,32 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+    <Dialog id="dlgSeleccionDisplays"
+            title="Seleccionar Displays no disponibles"
+            draggable="true"
+            resizable="true"
+            contentWidth="600px"
+            class="sapUiResponsivePadding">
+        <HBox width="100%" justifyContent="SpaceBetween">
+            <!-- Columna izquierda -->
+            <List id="listaDisplaysCol1"
+                  width="48%"
+                  mode="MultiSelect"
+                  items="{configModel>/listaDisplaysCol1}">
+                <StandardListItem title="{/nombre}" />
+            </List>
+
+            <!-- Columna derecha -->
+            <List id="listaDisplaysCol2"
+                  width="48%"
+                  mode="MultiSelect"
+                  items="{configModel>/listaDisplaysCol2}">
+                <StandardListItem title="{nombre}" />
+            </List>
+        </HBox>
+        <beginButton>
+            <Button text="Aceptar" press="onAceptarDisplays"/>
+        </beginButton>
+        <endButton>
+            <Button text="Cancelar" press="onCancelarDisplays"/>
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

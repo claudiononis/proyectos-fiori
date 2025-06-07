@@ -2763,17 +2763,15 @@ sap.ui.define([
         verificarCicloCompletado: function () {
             const oModel = ctx.getView().getModel();
             const tableData = oModel.getProperty("/tableData") || [];
-
             const rutasPendientes = tableData.filter(item => item.SCAN === "0" || item.SCAN === 0);
 
             if (rutasPendientes.length === 0) {
                 clearInterval(this._pollingInterval);
                 ctx._pollingInterval = null;
                 ctx._rutasConfirmadas = new Set();
-
                 ctx.byId("eanInput").setEnabled(true);
                 MessageToast.show("Producto confirmado en todas las rutas. Puede escanear uno nuevo.");
-                 oModel.setProperty("/ruta", 0);
+                 oModel.setProperty("/ruta", 0);//para resetear el modelo viejo
                 oModel.setProperty("/estadoMensaje", "Producto confirmado en todas las rutas. Puede escanear uno nuevo.");
             }
         },
