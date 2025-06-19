@@ -5,16 +5,19 @@
 
     <Page title="Inicio de Sesión" class="sapUiContentPadding">
         <!-- Usamos el prefijo "layout" para el control Grid -->
-        <layout:Grid defaultSpan="L6 M12 S12" hSpacing="1" vSpacing="1" width="100%" >
+        <layout:Grid defaultSpan="L6 M12 S12" hSpacing="1" vSpacing="1" width="100%">
             <!-- Panel Usuario -->
             <VBox>
                 <Panel headerText="Información de Usuario" class="sapUiResponsiveMargin" expandable="false" height="100%">
                     <VBox class="sapUiSmallMargin">
                         <!-- Renglón 1 -->
-                        <VBox class="sapUiTinyMargin">
-                            <Label text="Puesto de trabajo:"/>
-                            <Input id="puesto" required="true"/>
+                        <VBox alignItems="Center" class="sapUiSmallMarginBottom">
+                            <Label text="Puesto de trabajo:" />
+                            <Input id="puesto" width="150px" required="true"/>
                         </VBox>
+
+
+
 
                         <!-- Renglón 2 -->
                         <HBox>
@@ -52,29 +55,36 @@
                             </VBox>
                             <VBox class="sapUiTinyMargin" width="30%">
                                 <Label text=""/>
-                                <CheckBox id="usarRoll" selected="false" text="Usar Roll Container"/>
+                                <CheckBox id="usarRoll" selected="false" text="Usar Roll Container" select=".onToggleRollContainer"/>
                             </VBox>
                         </HBox>
 
                         <!-- Renglón 5 -->
                         <Button text="Displays no disponibles" press="onConfigurarDisplaysDañados" type="Default" class="sapUiTinyMarginTop"/>
+                        <MessageStrip id="lblDisplaysMarcados" text="Hay displays marcados como no disponibles." type="Warning" showIcon="true" class="sapUiSmallMarginBottom" visible="false"/>
                     </VBox>
                 </Panel>
             </VBox>
 
             <!-- Panel Acciones -->
-            <VBox>
+            <VBox width="90%">
                 <Panel headerText="Acciones" class="sapUiResponsiveMargin" expandable="false" height="100%">
                     <VBox class="sapUiSmallMargin">
-                        <Button text="Buscar datos" press="onBuscarPress" type="Emphasized" class="sapUiTinyMarginBottom"/>
-                        <Button id="btScan" text="Scan de productos" press="onScanPress" enabled="false" class="sapUiTinyMarginBottom"/>
-                        <Button id="btLog" text="Ver Log" press="onLogPress" enabled="false" class="sapUiTinyMarginBottom"/>
-                        <HBox>
-                            <Button id="btAvance" text="Avance por Código" press="onAvancePPress" enabled="false" class="sapUiSmallMarginEnd"/>
-                            <Button id="btAvanceRuta" text="Avance por Ruta" press="onAvanceRutaPress" enabled="false"/>
+                        <Button text="Buscar datos" press="onBuscarPress" type="Emphasized" width="90%" class="sapUiTinyMarginBottom"/>
+                        <Button id="btScan" text="Scan de productos" press="onScanPress" enabled="false" width="90%" class="sapUiTinyMarginBottom"/>
+                        <Button id="btLog" text="Ver Log" press="onLogPress" enabled="false" width="90%" class="sapUiTinyMarginBottom"/>
+                        <HBox width="90%" justifyContent="SpaceBetween" class="sapUiTinyMarginBottom">
+                            <VBox width="50%">
+                                <Button id="btAvance" text="Avance por Código" press="onAvancePPress" enabled="false" width="100%"/>
+                            </VBox>
+                            <VBox width="50%">
+                                <Button id="btAvanceRuta" text="Avance por Ruta" press="onAvanceRutaPress" enabled="false" width="100%"/>
+                            </VBox>
                         </HBox>
-                        <Button id="btDesconsolidado" text="Desafectación" press="onDesconsolidadoPress" enabled="false" type="Reject" class="sapUiTinyMarginTop"/>
-                        <Button id="btCierre" text="Cierre" press="onCierrePress" enabled="false" type="Reject" class="sapUiTinyMarginTop"/>
+
+
+                        <Button id="btDesconsolidado" text="Desafectación" press="onDesconsolidadoPress" width="90%" enabled="false" type="Reject" class="sapUiTinyMarginTop"/>
+                        <Button id="btCierre" text="Cierre" press="onCierrePress" enabled="false" type="Reject" width="90%" class="sapUiTinyMarginTop"/>
                     </VBox>
                 </Panel>
             </VBox>

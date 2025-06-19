@@ -410,22 +410,20 @@
     font-family: monospace; /* Fuente monoespaciada para uniformidad */
     font-weight: bold; /* Texto en negrita */
 }
+.fixedWidthText2 {
+    width: 8ch; /* Ancho fijo de 3 caracteres */
+    display: flex; /* Usar flexbox */
+    justify-content: center; /* Centrar horizontalmente */
+    align-items: center; /* Centrar verticalmente */
+    font-family: monospace; /* Fuente monoespaciada para uniformidad */
+    font-weight: bold; /* Texto en negrita */
+}
 .buttonSpacing {
     margin-right: 2rem; /* Ajusta el valor según lo que necesites */
 }
 .columnGray {
     background-color: #f0f0f0; /* Gris claro */
 }
-
-.customPageHeight {
-    height: 100vh; /* Altura total de la ventana */
-    display: flex;
-    flex-direction: column;
-}
-
-.customTableHeight {
-    height: 90%; /* Altura de la tabla ajustada al 90% */
-}
-.sapUiSizeCompact .sapMPanel {
-    height: 100% !important;
+.dialogColumns .sapMVBox:first-child {
+  margin-right: 4rem; /* Separación mayor entre columnas */
 }

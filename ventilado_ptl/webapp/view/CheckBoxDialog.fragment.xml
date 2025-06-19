@@ -1,0 +1,46 @@
+<core:FragmentDefinition
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core">
+
+  <Dialog id="checkboxDialog" title="Seleccionar opciones" class="sapUiResponsivePadding">
+    <HBox class="dialogColumns">
+
+      <!-- Columna izquierda -->
+      <VBox items="{checkboxes>/leftColumn}">
+        <items>
+          <HBox alignItems="Center">
+            <CheckBox text="{checkboxes>text}" selected="{checkboxes>selected}" />
+            <core:Icon
+              src="sap-icon://decline"
+              visible="{= ${checkboxes>selected} }"
+              color="red"
+              class="sapUiSmallMarginBegin" />
+          </HBox>
+        </items>
+      </VBox>
+
+      <!-- Columna derecha -->
+      <VBox items="{checkboxes>/rightColumn}" class="sapUiSmallMarginBegin">
+        <items>
+          <HBox alignItems="Center">
+            <CheckBox text="{checkboxes>text}" selected="{checkboxes>selected}" />
+            <core:Icon
+              src="sap-icon://decline"
+              visible="{= ${checkboxes>selected} }"
+              color="red"
+              class="sapUiSmallMarginBegin" />
+          </HBox>
+        </items>
+      </VBox>
+
+    </HBox>
+
+    <beginButton>
+      <Button text="Aceptar" press="onAceptarDisplays" />
+    </beginButton>
+    <endButton>
+      <Button text="Cerrar" press="onCloseDialog" />
+    </endButton>
+
+  </Dialog>
+</core:FragmentDefinition>

@@ -7,16 +7,7 @@
         <VBox class="mainContainer">
             <HBox class="headerSection">
                 <VBox class="leftPane">
-                    <!-- <HBox class="stateContainer" justifyContent="SpaceBetween">
-                        <VBox>
-                            <Text text="State:" class="label" />
-                            <Text text="{/scanState}" class="{= ${/scanState} === 'Running' ? 'running' : ${/scanState} === 'Paused' ? 'paused' : 'stopped' }" />
-                        </VBox>
-                        <VBox>
-                            <Text text="Tiempo:" class="label" />
-                            <Text text="{/formattedElapsedTime}" class="timer" />
-                        </VBox>
-                    </HBox> -->
+                    
                     <!-- Botones para navegar -->
                     <HBox>
                         <Button text="Avance por Codigo" press="onNavToAvanceCodigo" class="buttonSpacing" />
@@ -47,8 +38,9 @@
                         <Label id="edtCI" text="" class="inputCodigoIntern" width="100px" />
                         <Label id="lDescripcion" text="" class="inputDescripcion" />
                     </HBox>
-                    <HBox class="inputSection">
-                        <Text id="estadoMensaje" text="{/estadoMensaje}" class="estadoMensaje" visible="true" wrapping="true" />
+                    <HBox class="inputSection">                    
+                        <!-- Mensaje dinámico -->
+                        <MessageStrip id="estadoMensaje" text="{/estadoMensaje}" showIcon="true" class="sapUiSmallMarginBottom" visible="false"/>
                     </HBox>
                     <HBox class="spSection">
                         <VBox class="spBox">
@@ -82,11 +74,19 @@
                                 </OverflowToolbar>
                             </headerToolbar>
                             <columns>
-                                <Column>
+                               <!-- <Column>
                                     <header>
                                         <VBox>
                                             <Text text="RUTA" />
                                             <Text text="Totales" />
+                                        </VBox>
+                                    </header>
+                                </Column>-->
+                                 <Column>
+                                    <header>
+                                        <VBox>
+                                            <Text text="DSP" />
+                                            <Text text="" class="boldAndLargeText fixedWidthText" />
                                         </VBox>
                                     </header>
                                 </Column>
@@ -127,7 +127,8 @@
                             <items>
                                 <ColumnListItem>
                                     <cells>
-                                        <Text text="{Ruta}" class="boldAndLargeText fixedWidthText" />
+                                    <!--    <Text text="{Ruta}" class="boldAndLargeText fixedWidthText" />-->
+                                        <Text text="{DISPLAY}" class="boldAndLargeText fixedWidthText2"/>
                                         <Text text="{TOT}" class="boldAndLargeText fixedWidthText" />
                                         <HBox >
                                             <Text text="{SCAN}" class="boldAndLargeText fixedWidthText" />

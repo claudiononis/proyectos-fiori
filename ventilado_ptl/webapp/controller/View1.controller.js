@@ -18,6 +18,7 @@ sap.ui.define([
     var sPtoPlanif;
     var sPuesto;
     var sFecha;
+    let todasLasRutasAsignadas = false;
 
     return Controller.extend("ventilado.ventilado.controller.View1", {
 
@@ -54,6 +55,7 @@ sap.ui.define([
                 listaDisplaysCol2: [],
                 displaysDesactivados: []
             });
+            this._actualizarIndicadorDisplaysMarcados();
             this.getView().setModel(oConfigModel, "configModel");
         },
 
@@ -82,6 +84,8 @@ sap.ui.define([
                 localStorage.setItem('Actualizar', false)
                 this.onBuscarPress();
             }
+            this.verificarAsignacionDeDisplays();
+             this._actualizarIndicadorDisplaysMarcados();
 
         },
 
@@ -351,13 +355,14 @@ sap.ui.define([
                                 objectStore.put(item);
                             }
                             BusyIndicator.hide();  // Ocultar 
+                            ctx.verificarAsignacionDeDisplays();
                             console.log("Datos copiados con éxito.");
-                            ctx.getView().byId("btScan").setEnabled(true);
+                            /* ctx.getView().byId("btScan").setEnabled(true);
                             ctx.getView().byId("btLog").setEnabled(true);
                             ctx.getView().byId("btAvance").setEnabled(true);
                             ctx.getView().byId("btCierre").setEnabled(true);
                             ctx.getView().byId("btDesconsolidado").setEnabled(true);
-                            ctx.getView().byId("btAvanceRuta").setEnabled(true);
+                            ctx.getView().byId("btAvanceRuta").setEnabled(true); */
 
                         },
                         error: function (oError) {
@@ -382,100 +387,214 @@ sap.ui.define([
         _handleUnload: function () {
             this.closeAllDbConnections();
         },
-        onAceptarDisplays: function () {
-            const oList = this.byId("listaDisplays");
-            const aSelectedItems = oList.getSelectedItems();
 
-            const displaysSeleccionados = aSelectedItems.map(item => item.getTitle());
-
-            console.log("Displays desactivados:", displaysSeleccionados);
-
-            // Podés guardar en el modelo, en el backend o en localStorage
-            this._oDialogDisplays.close();
-        },
-        /*  onConfigurarDisplaysDañados: function () {
-              const oView = this.getView();
-              const oModel = oView.getModel("configModel");
-  
-              // Ejemplo: lista de displays cargada manualmente (puede venir de backend)
-              const displays = [
-                  { nombre: "Display 1" },
-                  { nombre: "Display 2" },
-                  { nombre: "Display 3" },
-                  { nombre: "Display 4" }
-              ];
-              oModel.setProperty("/listaDisplays", displays);
-              // Solo cargamos el fragment una vez
-              if (!this._oDialogDisplays) {
-                  Fragment.load({
-                      name: "ventilado.ventilado.view.SeleccionDisplays", // ⚠️ AJUSTÁ el path correcto
-                      controller: this
-                  }).then((oDialog) => {
-                      this._oDialogDisplays = oDialog;
-                      oView.addDependent(oDialog);
-                      this._oDialogDisplays.open();
-                  });
-              } else {
-                  this._oDialogDisplays.open();
-              }
-  
-  
-              
-          },*/
         onConfigurarDisplaysDañados: function () {
-            ctx=this;
-            const oView = this.getView();
-            const oModel = oView.getModel("configModel");
-
-            // Generar 30 displays
-            const allDisplays = [];
-            for (let i = 1; i <= 30; i++) {
-                const nombre = "DSP-" + String(i).padStart(3, "0");
-                allDisplays.push({ nombre });
-            }
-
-            // Dividir en 2 columnas
-            const col1 = allDisplays.slice(0, 15);
-            const col2 = allDisplays.slice(15);
-
-            oModel.setProperty("/listaDisplaysCol1", col1);
-            oModel.setProperty("/listaDisplaysCol2", col2);
-
-            if (!ctx._oDialogDisplays) {
+            var oView = this.getView();
+            ctx = this;
+            // Check if the fragment is already loaded
+            if (!this.byId("checkboxDialog")) {
                 Fragment.load({
-                    name: "ventilado.ventilado.view.SeleccionDisplays", // Cambiá por tu namespace
+                    id: oView.getId(),
+                    name: "ventilado.ventilado.view.CheckBoxDialog",
                     controller: this
-                }).then((oDialog) => {
-                    ctx._oDialogDisplays = oDialog;
+                }).then(function (oDialog) {
                     oView.addDependent(oDialog);
-                    // 👇 Forzar modelo al Dialog si hace falta
-                    oDialog.setModel(oModel, "configModel");
-                    ctx._oDialogDisplays.open();
+                    const aItems = [];
+                    for (let i = 1; i <= 30; i++) {
+                        aItems.push({
+      text: "dsp-" + i.toString().padStart(3, "0"),
+      selected: false // 👈 aseguramos que el valor inicial es false
+    });
+                    }
+
+                    const oModel = new sap.ui.model.json.JSONModel({
+                        leftColumn: aItems.slice(0, 15),
+                        rightColumn: aItems.slice(15)
+                    });
+                    oView.setModel(oModel, "checkboxes");
+                    // this.getView.Entrega
+                    oDialog.open();
+                    ctx._preseleccionarDisplaysMarcados(oDialog);
                 });
             } else {
-                ctx._oDialogDisplays.open();
+                const aItems = [];
+                for (let i = 1; i <= 30; i++) {
+                    aItems.push({
+      text: "dsp-" + i.toString().padStart(3, "0"),
+      selected: false // 👈 aseguramos que el valor inicial es false
+    });
+                }
+
+                const oModel = new sap.ui.model.json.JSONModel({
+                    leftColumn: aItems.slice(0, 15),
+                    rightColumn: aItems.slice(15)
+                });
+                oView.setModel(oModel, "checkboxes");
+                // this.getView.Entrega
+                this.byId("checkboxDialog").open();
+                ctx._preseleccionarDisplaysMarcados(this.byId("checkboxDialog"));
+
             }
         },
 
+
+        /**
+         * Handler for the close event of the checkbox dialog.
+         * Closes the checkbox dialog.
+         */
+        onCloseDialog: function () {
+            this.byId("checkboxDialog").close();
+        },
         onAceptarDisplays: function () {
-            const oList1 = this.byId("listaDisplaysCol1");
-            const oList2 = this.byId("listaDisplaysCol2");
+            const oDialog = this.byId("checkboxDialog");
+            const oHBox = oDialog.getContent()[0];
+            const seleccionados = [];
 
-            const aSelectedItems1 = oList1.getSelectedItems();
-            const aSelectedItems2 = oList2.getSelectedItems();
-
-            const seleccionados = [
-                ...aSelectedItems1.map(item => item.getTitle()),
-                ...aSelectedItems2.map(item => item.getTitle())
-            ];
-
-            const oModel = this.getView().getModel("configModel");
-            oModel.setProperty("/displaysDesactivados", seleccionados);
-
-            console.log("Displays desactivados:", seleccionados);
-
-            this._oDialogDisplays.close();
+          oHBox.getItems().forEach(oVBox => {
+  oVBox.getItems().forEach(oHBoxInner => {
+    if (oHBoxInner.isA("sap.m.HBox")) {
+      oHBoxInner.getItems().forEach(oControl => {
+        if (oControl.isA("sap.m.CheckBox") && oControl.getSelected()) {
+          seleccionados.push(oControl.getText());
         }
+      });
+    }
+  });
+});
+
+            localStorage.setItem("displaysDesactivados", JSON.stringify(seleccionados));
+            MessageToast.show("Displays desactivados: " + seleccionados.join(", "));
+            oDialog.close();
+             this._actualizarIndicadorDisplaysMarcados();
+        }        ,
+        verificarAsignacionDeDisplays: function () {
+            const ctx = this;
+            const request = indexedDB.open("ventilado", 5);
+
+            request.onsuccess = function (event) {
+                const db = event.target.result;
+                const transaction = db.transaction(["ventilado"], "readonly");
+                const objectStore = transaction.objectStore("ventilado");
+
+                const rutasConDisplay = new Set();
+                const todasLasRutas = new Set();
+
+                const cursorRequest = objectStore.openCursor();
+
+                cursorRequest.onsuccess = function (e) {
+                    const cursor = e.target.result;
+                    if (cursor) {
+                        const registro = cursor.value;
+
+                        // Ruta única
+                        const ruta = registro.LugarPDisp;
+                        todasLasRutas.add(ruta);
+
+                        if (registro.Prodr && registro.Prodr.trim() !== "") {
+                            rutasConDisplay.add(ruta);
+                        }
+
+                        cursor.continue();
+                    } else {
+                        // Al terminar de recorrer
+                        const todasAsignadas = [...todasLasRutas].every(ruta =>
+                            rutasConDisplay.has(ruta)
+                        );
+
+                        if (todasAsignadas) {
+                            ctx._setBotones(true);  // Habilitar todos
+                        } else {
+                            ctx._setBotones(false); // Solo avance por ruta
+                        }
+                    }
+                };
+            };
+        },
+        _setBotones: function (todoHabilitado) {
+            const oView = this.getView();
+
+            oView.byId("btScan").setEnabled(todoHabilitado);
+            oView.byId("btLog").setEnabled(todoHabilitado);
+            oView.byId("btAvance").setEnabled(todoHabilitado);
+            oView.byId("btDesconsolidado").setEnabled(todoHabilitado);
+            oView.byId("btCierre").setEnabled(todoHabilitado);
+
+            // Avance por Ruta siempre habilitado
+            oView.byId("btAvanceRuta").setEnabled(true);
+        },
+
+
+        onToggleRollContainer: function (oEvent) {
+            const bSelected = oEvent.getParameter("selected");
+            const oView = this.getView();
+            const oInputLim1 = oView.byId("limite1");
+            const oInputLim2 = oView.byId("limite2");
+
+            if (!this._lastLimite2Value) {
+                this._lastLimite2Value = oInputLim2.getValue();
+            }
+
+            if (!bSelected) {
+                // Desactiva Roll Container
+                const valLim1 = oInputLim1.getValue();
+                oInputLim2.setValue(valLim1);
+                oInputLim2.setEnabled(false);
+            } else {
+                // Activa Roll Container
+                oInputLim2.setEnabled(true);
+                oInputLim2.setValue(this._lastLimite2Value || "12");
+            }
+        },
+        _actualizarIndicadorDisplaysMarcados: function () {
+            const lista = JSON.parse(localStorage.getItem("displaysDesactivados") || "[]");
+            const hayMarcados = lista.length > 0;
+            this.byId("lblDisplaysMarcados").setVisible(hayMarcados);
+        },
+       /*  _preseleccionarDisplaysMarcados: function (oDialog) {
+            // Recuperar selección previa
+            const seleccionados = JSON.parse(localStorage.getItem("displaysDesactivados") || "[]");
+
+            // El contenido principal es un HBox
+            const oHBox = oDialog.getContent()[0];
+            if (!oHBox) return;
+
+            // Recorremos ambos VBox
+            oHBox.getItems().forEach(oVBox => {
+                oVBox.getItems().forEach(oControl => {
+                    if (oControl.isA("sap.m.CheckBox")) {
+                        const sTexto = oControl.getText();
+                        oControl.setSelected(seleccionados.includes(sTexto));
+                    }
+                });
+            });
+        }, */
+
+_preseleccionarDisplaysMarcados: function (oDialog) {
+  // Recuperar selección previa
+  const seleccionados = JSON.parse(localStorage.getItem("displaysDesactivados") || "[]");
+
+  // El contenido principal es un HBox
+  const oHBox = oDialog.getContent()[0];
+  if (!oHBox) return;
+
+  // Recorremos ambos VBox (columnas)
+  oHBox.getItems().forEach(oVBox => {
+    // Dentro de cada VBox hay varios HBox (CheckBox + Icon)
+    oVBox.getItems().forEach(oHBoxItem => {
+      if (oHBoxItem.isA("sap.m.HBox")) {
+        oHBoxItem.getItems().forEach(oControl => {
+          if (oControl.isA("sap.m.CheckBox")) {
+            const sTexto = oControl.getText();
+            oControl.setSelected(seleccionados.includes(sTexto));
+          }
+        });
+      }
+    });
+  });
+},
+
+
+
 
 
     });

@@ -70,7 +70,7 @@ sap.ui.define([
       sReparto = localStorage.getItem("sReparto");
       sPtoPlanif = localStorage.getItem("sPtoPlanif");
       sUsuario = localStorage.getItem("sPreparador");
-     // this.getView().byId("btScan2").setEnabled(false);
+      this.getView().byId("btScan2").setEnabled(false);
       //  var oModel = new sap.ui.model.json.JSONModel();
       // this.getView().setModel(oModel);
 
@@ -96,7 +96,16 @@ sap.ui.define([
           const limite2 = parseInt(localStorage.getItem("limite2")) || 12;
           const usarRoll = localStorage.getItem("usarRoll") === "true";
 
-          ctx.datosD = this.asignarContenedoresYDisplays(ctx.datosD, limite1, limite2, usarRoll,false,false);
+          const oModelDisplays = this.getView().getModel();
+
+          // Leer los displays desactivados guardados por View1
+          const displaysDesactivados = JSON.parse(localStorage.getItem("displaysDesactivados") || "[]");
+
+          // ✅ Guardarlos en el modelo de la vista para usarlos
+          oModelDisplays.setProperty("/displaysNoDisponibles", displaysDesactivados);
+
+
+          ctx.datosD = this.asignarContenedoresYDisplays(ctx.datosD, limite1, limite2, usarRoll, false, false);
 
           if (ctx.excedioLimiteDisplays(this.datosD)) {
             const oView = this.getView();
@@ -205,72 +214,39 @@ sap.ui.define([
       }
     },
 
-    calcularDisplays: function (data) {
-      let displayCounter = 1;
+    /*  calcularDisplays: function (data) {
+       let displayCounter = 1;
+ 
+       data.forEach(function (item, index) {
+         if (item.Ruta === "1") {
+           // Ruta 1 siempre tiene dsp-001
+           item.display = "dsp-001";
+           displayCounter = 2; // Comienza el contador desde dsp-002 para las siguientes rutas
+         } else {
+           // Calcular el display según el tipo de contenedor
+           switch (item.contenedor) {
+             case "CUB":
+               item.display = "dsp-" + ("000" + displayCounter).slice(-3);
+               displayCounter += 1;
+               break;
+             case "ROLL":
+               item.display = "dsp-" + ("000" + displayCounter).slice(-3);
+               displayCounter += 2;
+               break;
+             case "PALLET":
+               item.display = "dsp-" + ("000" + displayCounter).slice(-3);
+               displayCounter += 3;
+               break;
+             default:
+               item.display = "";
+           }
+         }
+       });
+ 
+       return data;
+     }, */
 
-      data.forEach(function (item, index) {
-        if (item.Ruta === "1") {
-          // Ruta 1 siempre tiene dsp-001
-          item.display = "dsp-001";
-          displayCounter = 2; // Comienza el contador desde dsp-002 para las siguientes rutas
-        } else {
-          // Calcular el display según el tipo de contenedor
-          switch (item.contenedor) {
-            case "CUB":
-              item.display = "dsp-" + ("000" + displayCounter).slice(-3);
-              displayCounter += 1;
-              break;
-            case "ROLL":
-              item.display = "dsp-" + ("000" + displayCounter).slice(-3);
-              displayCounter += 2;
-              break;
-            case "PALLET":
-              item.display = "dsp-" + ("000" + displayCounter).slice(-3);
-              displayCounter += 3;
-              break;
-            default:
-              item.display = "";
-          }
-        }
-      });
 
-      return data;
-    },
-    /* onChangeContenedor: function (oEvent) {
-       // Obtener el ComboBox
-       var oComboBox = oEvent.getSource();
- 
-       // Obtener el contenedor seleccionado
-       var sContenedor = oComboBox.getSelectedKey();
- 
-       if (!sContenedor) {
-         console.error("No se pudo obtener el contenedor seleccionado.");
-         return;
-       }
- 
-       // Obtener el contexto de enlace y el modelo
-       var oBindingContext = oEvent.getSource().getBindingContext();
-       var oModel = this.getView().getModel();
-       var oData = oBindingContext.getObject();
- 
-       // Actualizar el contenedor seleccionado en el objeto vinculado al modelo
-       oData.contenedor = sContenedor;
- 
-       // Actualizar el modelo con el nuevo valor del contenedor
-       oModel.setProperty(oBindingContext.getPath() + "/contenedor", sContenedor);
- 
-       // Obtener todos los datos actualizados desde el modelo
-       var aFullData = oModel.getProperty("/tableData");
- 
-       // Recalcular todos los displays
-       aFullData = this.calcularDisplays(aFullData);
- 
-       // Actualizar el modelo con los nuevos displays
-       oModel.setProperty("/tableData", aFullData);
- 
-       // Refrescar la UI
-       oModel.refresh();
-     },*/
     onChangeContenedor: function (oEvent) {
       const oComboBox = oEvent.getSource();
       const sNuevoContenedor = oComboBox.getSelectedKey();
@@ -647,7 +623,7 @@ sap.ui.define([
       return totalEspacios > 30;
     },
     // ✅ NUEVO MÉTODO en Avance.controller.js
-    onConfigurarDisplaysDañados: function () {
+    /* onConfigurarDisplaysDañados: function () {
       const oView = this.getView();
       const aNoDisponibles = oView.getModel().getProperty("/displaysNoDisponibles") || [];
 
@@ -676,7 +652,72 @@ sap.ui.define([
       });
 
       dialog.open();
-    },
+    }, */
+    asignarContenedoresYDisplays: function (aData, limite1, limite2, usarRoll, respetarContenedorManual, skipSort) {
+      const indisponibles = this.getView().getModel().getProperty("/displaysNoDisponibles") || [];
+
+      // Asignar tipo de contenedor si corresponde
+      aData.forEach(item => {
+        if (!respetarContenedorManual || !item.contenedor) {
+          if (item.CubTEO <= limite1) {
+            item.contenedor = "CUB";
+          } else if (item.CubTEO > limite2 || !usarRoll) {
+            item.contenedor = "PALLET";
+          } else {
+            item.contenedor = "ROLL";
+          }
+        }
+      });
+
+      // Ordenar si se requiere
+      if (!skipSort) {
+        const tipoOrden = { "CUB": 1, "PALLET": 2, "ROLL": 3 };
+        aData.sort((a, b) => {
+          if (tipoOrden[a.contenedor] !== tipoOrden[b.contenedor]) {
+            return tipoOrden[a.contenedor] - tipoOrden[b.contenedor];
+          }
+          return parseInt(a.Ruta) - parseInt(b.Ruta);
+        });
+      }
+
+      // Asignación de displays
+      let posicion = 1;
+      const posicionesPorModulo = 6;
+
+      aData.forEach(item => {
+        const espacios = item.contenedor === "CUB" ? 1 : item.contenedor === "ROLL" ? 2 : 3;
+
+        let displayAsignado = null;
+
+        while (!displayAsignado) {
+          let moduloInicio = Math.ceil(posicion / posicionesPorModulo);
+          let moduloFin = Math.ceil((posicion + espacios - 1) / posicionesPorModulo);
+
+          // Asegura que no se cruce de módulo
+          if (moduloInicio === moduloFin) {
+            // Buscar el primer display disponible dentro del bloque
+            for (let i = 0; i < espacios; i++) {
+              const candidato = "dsp-" + ("000" + (posicion + i)).slice(-3);
+              if (!indisponibles.includes(candidato)) {
+                displayAsignado = candidato;
+                break;
+              }
+            }
+          }
+
+          // Si no se asignó, seguir buscando
+          if (!displayAsignado) {
+            posicion++;
+          }
+        }
+
+        item.display = displayAsignado;
+        posicion += espacios;
+      });
+
+      return aData;
+    }
+
 
   });
 });  

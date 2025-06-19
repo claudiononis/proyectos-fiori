@@ -217,7 +217,7 @@ sap.ui.define([
                 //Recupera el estado del transporte
 
                 // Nombres de las columnas
-                var columnNames = ["Ruta", "CLIENTE", "RAZONSOCIAL", "TOT", "SCAN", "FALTA", "Cub TEO", "C Real", "Pa"];
+                var columnNames = ["Ruta", "CLIENTE", "RAZONSOCIAL", "TOT", "SCAN", "FALTA", "Cub TEO", "C Real", "Pa", , "DISPLAY"];
 
                 // Mapear arrayResultado a la estructura de tableDataArray
                 var tableDataArray = resultado.map((registro) => {
@@ -286,7 +286,7 @@ sap.ui.define([
                 //Recupera el estado del transporte
 
                 // Nombres de las columnas
-                var columnNames = ["Ruta", "CLIENTE", "RAZONSOCIAL", "TOT", "SCAN", "FALTA", "Cub TEO", "C Real", "Pa"];
+                var columnNames = ["Ruta", "CLIENTE", "RAZONSOCIAL", "TOT", "SCAN", "FALTA", "Cub TEO", "C Real", "Pa", , "DISPLAY"];
 
                 // Mapear arrayResultado a la estructura de tableDataArray
                 var tableDataArray = resultado.map((registro) => {
@@ -427,6 +427,7 @@ sap.ui.define([
                             "DIRECCION": registro.Calle,
                             "LOCALIDAD": registro.LugarDestinatario,
                             "CODIGOINTERNO": registro.CodigoInterno,
+                            "DISPLAY": registro.display
 
                         };
                     }
@@ -453,7 +454,14 @@ sap.ui.define([
             );
 
             // Convierte el objeto resultado en un array
+
             let arrayResultado = Object.keys(resultado).map((ruta) => resultado[ruta]);
+            // Ordenar por nombre de display (numéricamente)
+            arrayResultado.sort((a, b) => {
+                const numA = a.DISPLAY ? parseInt(a.DISPLAY.replace("dsp-", "")) : 9999;
+                const numB = b.DISPLAY ? parseInt(b.DISPLAY.replace("dsp-", "")) : 9999;
+                return numA - numB;
+            });
             return arrayResultado;
         },
 
@@ -614,6 +622,7 @@ sap.ui.define([
         /****** Inicio: Arranca proceso de  escaneo  ********************************************/
         onStartPress: function () {
             this.getView().getModel().setProperty("/estadoMensaje", "Esperando escaneo...");
+            this.getView().byId("estadoMensaje").setVisible(true);
             ctx = this;
             if (completo == 0) {
                 ctx.getView().byId("eanInput").setVisible(false);
@@ -741,7 +750,7 @@ sap.ui.define([
             this.handleEanEnter(sValue);
         },
         handleEanEnter: async function (sValue) {
-
+            var procesa_confirmacion = 0;
             sValue = sValue.replace(/^0+/, '');
             // Lógica a ejecutar cuando se presiona Enter en el input del EAN
             // var cantidad = this.getView().byId("txtCantidad");
@@ -890,6 +899,7 @@ sap.ui.define([
                                 cantidadYRuta3 = await this.obtenerCantidadYRutaSobrante(sValue, 2);
                                 if (cantidadYRuta3.cantidad > 0) {
                                     console.log("es un producto");
+
                                     // Actualiza el modelo
                                     oModel.setProperty("/ruta", cantidadYRuta3.ruta);
                                     oModel.setProperty("/cantidad", cantidadYRuta3.cantidad);
@@ -915,7 +925,7 @@ sap.ui.define([
                                     localStorage.setItem('ultimoProdScan', cantidadYRuta3.ci);
                                     localStorage.setItem('descUltimoProdScan', cantidadYRuta3.descripcion);
                                     await this.obtenerYProcesarDatos();
-                                    this.getView().setModel(oModel);
+                                    //    this.getView().setModel(oModel);
                                     var Input = ctx.getView().byId("eanInput");
                                     setTimeout(function () {
                                         Input.focus();
@@ -965,103 +975,114 @@ sap.ui.define([
                 var ruta = this._findRouteByEAN(sValue);
                 if (ruta) {
                     console.log("es una confirmacion")
+                    const tableData = this.getView().getModel().getProperty("/tableData") || [];
+                    const registroRuta = tableData.find(item => item.Ruta === ruta);
+
+                    const objetoPTL = {
+                        rutaId: ruta,
+                        cantidadConfirmada: registroRuta.TOT || 1 // 👈 Usamos la cantidad original asignada
+                    };
+                    procesa_confirmacion = 1;
+
+                    ctx.procesarRutaConfirmadaDesdePTL(objetoPTL);
+                    Ean.setValue("");
                     // es la confirmacion al ciclo actual
                     // resetea valores para iniciar el nuevo ciclo  
-                    var scant = oModel.getProperty("/cantidad");
-                    if (ruta == oModel.getProperty("/ruta")) {
-                        oModel.setProperty("/ruta", 0);
-
-                        oModel.setProperty("/ean", "");
-                        // oModel.setProperty("/ultimoProdScan", oModel.getProperty("/ci"));
-                        // oModel.setProperty("/descUltimoProdScan", descripcion.getText());
-                        oModel.setProperty("/ci", "");
-                        oModel.setProperty("/descripcion", "");
-                        var m3v = parseFloat(oModel.getProperty("/M3v")) || 0;
-                        var Kgbrv = parseFloat(oModel.getProperty("/Kgbrv")) || 0;
-
-                        var cantidadAEscanear = parseInt(oModel.getProperty("/cantidadAEscanear")) || 1; // Asegúrate de no dividir por cero
-
-                        //actualiza el estado 
-                        var request = indexedDB.open("ventilado", 5);
-
-                        var id = oModel.getProperty("/id");
-
-                        request.onsuccess = function (event) {
-                            var db = event.target.result;
-                            ctx._dbConnections.push(db); // Guardar referencia a la conexión abierta
-                            // Llamar a la función para actualizar el campo 'Estado'
-                            // Incrementar y asignar el nuevo valor de AdicChar2
-                            maxAdicChar2 = maxAdicChar2 + 1;
-
-                            // Realizar la operación matemática
-                            var resultadoM3r = (m3v * scant) / cantidadAEscanear;
-
-                            // Redondear a 1 decimal
-                            // resultadoM3r = Math.round(resultadoM3r * 10) / 100;
-
-                            // Formatear el resultado para que tenga longitud 5
-                            var resultadoFormateadoM3r = resultadoM3r.toFixed(3).padStart(5, ' ');
-
-                            // Realizar la operación matemática
-                            var resultadoKgbrr = (Kgbrv * scant) / cantidadAEscanear;
-
-                            // Formatear el resultado para que tenga longitud 5
-                            var resultadoFormateadoKgbrr = resultadoKgbrr.toFixed(1).padStart(5, ' ');
-
-
-                            ctx.actualizarEstado(db, id, "Completo", scant, String(maxAdicChar2), ctx.getFormattedDateTime(), resultadoFormateadoKgbrr, resultadoFormateadoM3r);
-                        };
-                        oModel.setProperty("/id", 0);
-                        oModel.setProperty("/cantidad", 0);
-                        oModel.setProperty("/cantidadAEscanear", 0);
-                        cantidad.setText("");
-                        sRuta.setText("");
-                        descripcion.setText("");
-                        Ean.setValue("");
-                        ci.setText("");
-                        oModel.setProperty("/Kgbrv", '');
-                        oModel.setProperty("/M3v", '');
-                        // Actualizar tableData
-                        var tableData = oModel.getProperty("/tableData");
-                        // Buscar el registro correspondiente en tableData
-                        tableData.forEach(function (registro) {
-                            if (registro.Ruta === ruta) {
-                                registro.SCAN = Number(registro.SCAN) || 0;
-                                registro.SCAN = Number(scant);
-                                registro.FALTA = registro.FALTA - Number(scant);
-                            }
-                        });
-                        var totalScan = oModel.getProperty("/totalScan");
-                        //totalScan = totalScan + Number(scant);
-                        totalScan = Number(scant);
-                        var totalFalta = oModel.getProperty("/totalFalta");
-                        totalFalta = totalFalta - Number(scant);
-
-                        // Establecer el array actualizado en el modelo
-                        oModel.setProperty("/tableData", tableData);
-                        oModel.setProperty("/totalScan", totalScan);
-                        oModel.setProperty("/totalFalta", totalFalta);
-                        this.getView().setModel(oModel);
-
-                        var Input = ctx.getView().byId("eanInput");
-                        setTimeout(function () {
-                            Input.focus();
-                        }, 0);
-                    }
-
-                    else {
-
-                        var Ean = this.getView().byId("eanInput");
-
-                        MessageBox.error("Error : Esta confirmando en una ruta equivocada, tiene que hacelo en la ruta " + oModel.getProperty("/ruta"), {
-                            title: "Error ",
-                            styleClass: "customMessageBox", // Aplica la clase CSS personalizada
-                            onClose: function () {
-                                Ean.setValue('');
-                                console.log("Mensaje de error personalizado cerrado.");
-                            }
-                        });
-                    }
+                    /*   var scant = oModel.getProperty("/cantidad");
+                       if (ruta == oModel.getProperty("/ruta")) {
+                           oModel.setProperty("/ruta", 0);
+   
+                           oModel.setProperty("/ean", "");
+                           // oModel.setProperty("/ultimoProdScan", oModel.getProperty("/ci"));
+                           // oModel.setProperty("/descUltimoProdScan", descripcion.getText());
+                           oModel.setProperty("/ci", "");
+                           oModel.setProperty("/descripcion", "");
+                           var m3v = parseFloat(oModel.getProperty("/M3v")) || 0;
+                           var Kgbrv = parseFloat(oModel.getProperty("/Kgbrv")) || 0;
+   
+                           var cantidadAEscanear = parseInt(oModel.getProperty("/cantidadAEscanear")) || 1; // Asegúrate de no dividir por cero
+   
+                           //actualiza el estado 
+                           var request = indexedDB.open("ventilado", 5);
+   
+                           var id = oModel.getProperty("/id");
+   
+                           request.onsuccess = function (event) {
+                               var db = event.target.result;
+                               ctx._dbConnections.push(db); // Guardar referencia a la conexión abierta
+                               // Llamar a la función para actualizar el campo 'Estado'
+                               // Incrementar y asignar el nuevo valor de AdicChar2
+                               maxAdicChar2 = maxAdicChar2 + 1;
+   
+                               // Realizar la operación matemática
+                               var resultadoM3r = (m3v * scant) / cantidadAEscanear;
+   
+                               // Redondear a 1 decimal
+                               // resultadoM3r = Math.round(resultadoM3r * 10) / 100;
+   
+                               // Formatear el resultado para que tenga longitud 5
+                               var resultadoFormateadoM3r = resultadoM3r.toFixed(3).padStart(5, ' ');
+   
+                               // Realizar la operación matemática
+                               var resultadoKgbrr = (Kgbrv * scant) / cantidadAEscanear;
+   
+                               // Formatear el resultado para que tenga longitud 5
+                               var resultadoFormateadoKgbrr = resultadoKgbrr.toFixed(1).padStart(5, ' ');
+   
+   
+                               ctx.actualizarEstado(db, id, "Completo", scant, String(maxAdicChar2), ctx.getFormattedDateTime(), resultadoFormateadoKgbrr, resultadoFormateadoM3r);
+                           };
+                           oModel.setProperty("/id", 0);
+                           oModel.setProperty("/cantidad", 0);
+                           oModel.setProperty("/cantidadAEscanear", 0);
+                           cantidad.setText("");
+                           sRuta.setText("");
+                           descripcion.setText("");
+                           Ean.setValue("");
+                           ci.setText("");
+                           oModel.setProperty("/Kgbrv", '');
+                           oModel.setProperty("/M3v", '');
+                           // Actualizar tableData
+                           var tableData = oModel.getProperty("/tableData");
+                           // Buscar el registro correspondiente en tableData
+                           tableData.forEach(function (registro) {
+                               if (registro.Ruta === ruta) {
+                                   registro.SCAN = Number(registro.SCAN) || 0;
+                                   registro.SCAN = Number(scant);
+                                   registro.FALTA = registro.FALTA - Number(scant);
+                               }
+                           });
+                           var totalScan = oModel.getProperty("/totalScan");
+                           //totalScan = totalScan + Number(scant);
+                           totalScan = Number(scant);
+                           var totalFalta = oModel.getProperty("/totalFalta");
+                           totalFalta = totalFalta - Number(scant);
+   
+                           // Establecer el array actualizado en el modelo
+                           oModel.setProperty("/tableData", tableData);
+                           oModel.setProperty("/totalScan", totalScan);
+                           oModel.setProperty("/totalFalta", totalFalta);
+                           this.getView().setModel(oModel);
+   
+                           var Input = ctx.getView().byId("eanInput");
+                           setTimeout(function () {
+                               Input.focus();
+                           }, 0);
+                       }
+   
+                       else {
+   
+                           var Ean = this.getView().byId("eanInput");
+   
+                           MessageBox.error("Error : Esta confirmando en una ruta equivocada, tiene que hacelo en la ruta " + oModel.getProperty("/ruta"), {
+                               title: "Error ",
+                               styleClass: "customMessageBox", // Aplica la clase CSS personalizada
+                               onClose: function () {
+                                   Ean.setValue('');
+                                   console.log("Mensaje de error personalizado cerrado.");
+                               }
+                           });
+                       }*/
                 }
                 else {
                     var Ean = this.getView().byId("eanInput");
@@ -1076,31 +1097,31 @@ sap.ui.define([
                     });
                 }
             }
+            if (procesa_confirmacion == 0) {
+                let datos = await this.obtenerDatosDeIndexedDB();
+                //veo si esta completo el escaneo
+                // Sumar el total de CantEscaneada y CantidadEntrega
+                const { totalEscaneada, totalEntrega } = datos.reduce((totales, item) => {
+                    totales.totalEscaneada += item.CantEscaneada || 0;
+                    totales.totalEntrega += item.CantidadEntrega || 0;
+                    return totales;
+                }, { totalEscaneada: 0, totalEntrega: 0 });
+                // Calcular la diferencia entre ambos totales
+                completo = totalEntrega - totalEscaneada;
+                if (completo == 0) {
+                    this.getView().byId("eanInput").setVisible(false);
+                    this.getView().byId("parcialButton").setEnabled(false);
+                }
 
-            let datos = await this.obtenerDatosDeIndexedDB();
-            //veo si esta completo el escaneo
-            // Sumar el total de CantEscaneada y CantidadEntrega
-            const { totalEscaneada, totalEntrega } = datos.reduce((totales, item) => {
-                totales.totalEscaneada += item.CantEscaneada || 0;
-                totales.totalEntrega += item.CantidadEntrega || 0;
-                return totales;
-            }, { totalEscaneada: 0, totalEntrega: 0 });
-            // Calcular la diferencia entre ambos totales
-            completo = totalEntrega - totalEscaneada;
-            if (completo == 0) {
-                this.getView().byId("eanInput").setVisible(false);
-                this.getView().byId("parcialButton").setEnabled(false);
+                var oModel = this.getView().getModel();
+                oModel.setProperty("/isArrowVisible", true);
+                var descripcion = this.getView().byId("lDescripcion");
+                MessageToast.show("Valor ingresado: " + sValue);
+                /**** Inicio Agregado para  PTL ******** */
+                this.enviarDatosAPickToLine();
+                /********* fin */
+                this.getView().setModel(oModel);
             }
-
-            var oModel = this.getView().getModel();
-            oModel.setProperty("/isArrowVisible", true);
-            var descripcion = this.getView().byId("lDescripcion");
-            MessageToast.show("Valor ingresado: " + sValue);
-            /**** Inicio Agregado para  PTL ******** */
-            this.enviarDatosAPickToLine();
-            /********* fin */
-            this.getView().setModel(oModel);
-
         },
 
 
@@ -2560,7 +2581,7 @@ sap.ui.define([
                     displayId: this.obtenerDisplayId(item.Ruta, datosD)
                 }))
             };
-
+            oModel.setProperty("/estadoMensaje", "Esperando respuesta de la API Pick to Line...");
             fetch(`${PTL_API_URL}/encender`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -2576,8 +2597,22 @@ sap.ui.define([
                         MessageBox.error("Error al encender displays: " + data.message);
                     }
                 }.bind(this))  // 🔧 preserve el this del controlador
-                .catch((err) => {
-                    MessageBox.error("Error de red al llamar a PickToLine API.");
+                .catch((err) => {                    
+                    MessageBox.error(
+                        "Error de red al llamar a PickToLine API.\n\n" +
+                        "Por favor, verifique:\n" +
+                        "1. Que la máquina donde corre la API esté encendida y accesible.\n" +
+                        "2. Que la conexión de red esté activa (VPN, firewall, cables).\n" +
+                        "3. Si lo anterior es correcto, reinicie la maquina que contiene la API.\n" +
+                        "4. Vuelva a reiniciar el escaneo.",
+                        {
+                            title: "Error de red PickToLine",
+                            actions: [MessageBox.Action.CLOSE],
+                            emphasizedAction: MessageBox.Action.CLOSE,
+                            styleClass: "sapUiSizeCompact"
+                        }
+                    );
+                    ctx.byId("estadoMensaje").setVisible(false);
                     console.error(err);
                 });
         },
@@ -2638,43 +2673,7 @@ sap.ui.define([
             }
             ctx._rutasConfirmadas = new Set();
         },
-        /*       iniciarPollingEstadoPTL: function () {
-                   const ctx = this;
-                   const workstationId = sPuesto;
-                   const url = `${PTL_API_URL}/estado?workstationId=${workstationId}`;
-       
-                   // Usamos un Set para llevar registro de rutas confirmadas y evitar repetir confirmaciones
-                   this._rutasConfirmadas = this._rutasConfirmadas || new Set();
-       
-                   // Limpiamos polling anterior si existe
-                   if (this._pollingInterval) {
-                       clearInterval(this._pollingInterval);
-                   }
-       
-                   // Iniciar polling cada 3 segundos
-                   this._pollingInterval = setInterval(function () {
-                       fetch(url)
-                           .then(function (response) {
-                               if (!response.ok) {
-                                   throw new Error("Error en la respuesta del polling: " + response.statusText);
-                               }
-                               return response.json();
-                           })
-                           .then(function (data) {
-                               if (data.estado && Array.isArray(data.estado)) {
-                                   data.estado.forEach(function (ruta) {
-                                       if (ruta.completada && !ctx._rutasConfirmadas.has(ruta.rutaId)) {
-                                           ctx.procesarRutaConfirmadaDesdePTL(ruta);
-                                           ctx._rutasConfirmadas.add(ruta.rutaId);
-                                       }
-                                   });
-                               }
-                           })
-                           .catch(function (err) {
-                               console.error("Error al hacer polling:", err);
-                           });
-                   }, 3000);
-               },*/
+
         procesarRutaConfirmadaDesdePTL: async function (ruta) {
             ctx = this;
             const oModel = this.getView().getModel();
@@ -2771,7 +2770,7 @@ sap.ui.define([
                 ctx._rutasConfirmadas = new Set();
                 ctx.byId("eanInput").setEnabled(true);
                 MessageToast.show("Producto confirmado en todas las rutas. Puede escanear uno nuevo.");
-                 oModel.setProperty("/ruta", 0);//para resetear el modelo viejo
+                oModel.setProperty("/ruta", 0);//para resetear el modelo viejo
                 oModel.setProperty("/estadoMensaje", "Producto confirmado en todas las rutas. Puede escanear uno nuevo.");
             }
         },
