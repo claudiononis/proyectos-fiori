@@ -1865,12 +1865,12 @@ sap.ui.define([
                     });
                 };
 
-                // Función para actualizar los registros secuencialmente
+                // Función para actualizar los registros secuencialmente.
                 var updateRecords = function (aData) {
                     var updateNext = function (index) {
                         if (index < aData.length) {
                             updateRecord(aData[index], function () {
-                                updateNext(index + 1);
+                                updateNext(index + 1); 
                             });
                         } else {
                             MessageToast.show("Todos los registros se han actualizado con éxito.");
