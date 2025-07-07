@@ -8,8 +8,9 @@ sap.ui.define([
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
     "sap/ui/core/Fragment",
+    "sap/ui/model/json/JSONModel",
 
-], function (UIComponent, Controller, MessageToast, MessageBox, BusyIndicator, ODataModel, Filter, FilterOperator, Fragment) {
+], function (UIComponent, Controller, MessageToast, MessageBox, BusyIndicator, ODataModel, Filter, FilterOperator, Fragment, JSONModel) {
     "use strict";
     var ctx;
     var sPreparador;
@@ -23,6 +24,8 @@ sap.ui.define([
     return Controller.extend("ventilado.ventilado.controller.View1", {
 
         onInit: function () {
+
+
             // Cargar límites desde localStorage o usar por defecto
             const oView = this.getView();
             const limite1 = localStorage.getItem("limite1");
@@ -57,6 +60,18 @@ sap.ui.define([
             });
             this._actualizarIndicadorDisplaysMarcados();
             this.getView().setModel(oConfigModel, "configModel");
+            this._cargarDepositos();
+            if (localStorage.getItem("estacionId")) {
+                this._rellenarDatosFijos();
+                return;
+            }
+            // Caso contrario, cargar la lista de depósitos
+
+            // 2) Modelo “view” para datos de la propia pantalla
+            const oViewModel = new sap.ui.model.json.JSONModel({
+                depositoSel: ""          // aquí guardaremos la selección
+            });
+
         },
 
 
@@ -84,8 +99,8 @@ sap.ui.define([
                 localStorage.setItem('Actualizar', false)
                 this.onBuscarPress();
             }
-            this.verificarAsignacionDeDisplays();
-             this._actualizarIndicadorDisplaysMarcados();
+          //  this.verificarAsignacionDeDisplays();
+            this._actualizarIndicadorDisplaysMarcados();
 
         },
 
@@ -355,14 +370,10 @@ sap.ui.define([
                                 objectStore.put(item);
                             }
                             BusyIndicator.hide();  // Ocultar 
-                            ctx.verificarAsignacionDeDisplays();
+                            /*   ctx.verificarAsignacionDeDisplays();
+                              console.log("Datos copiados con éxito."); */
+                            ctx._verificarAsignacionYRedirigir();
                             console.log("Datos copiados con éxito.");
-                            /* ctx.getView().byId("btScan").setEnabled(true);
-                            ctx.getView().byId("btLog").setEnabled(true);
-                            ctx.getView().byId("btAvance").setEnabled(true);
-                            ctx.getView().byId("btCierre").setEnabled(true);
-                            ctx.getView().byId("btDesconsolidado").setEnabled(true);
-                            ctx.getView().byId("btAvanceRuta").setEnabled(true); */
 
                         },
                         error: function (oError) {
@@ -402,9 +413,9 @@ sap.ui.define([
                     const aItems = [];
                     for (let i = 1; i <= 30; i++) {
                         aItems.push({
-      text: "dsp-" + i.toString().padStart(3, "0"),
-      selected: false // 👈 aseguramos que el valor inicial es false
-    });
+                            text: "dsp-" + i.toString().padStart(3, "0"),
+                            selected: false // 👈 aseguramos que el valor inicial es false
+                        });
                     }
 
                     const oModel = new sap.ui.model.json.JSONModel({
@@ -420,9 +431,9 @@ sap.ui.define([
                 const aItems = [];
                 for (let i = 1; i <= 30; i++) {
                     aItems.push({
-      text: "dsp-" + i.toString().padStart(3, "0"),
-      selected: false // 👈 aseguramos que el valor inicial es false
-    });
+                        text: "dsp-" + i.toString().padStart(3, "0"),
+                        selected: false // 👈 aseguramos que el valor inicial es false
+                    });
                 }
 
                 const oModel = new sap.ui.model.json.JSONModel({
@@ -450,23 +461,23 @@ sap.ui.define([
             const oHBox = oDialog.getContent()[0];
             const seleccionados = [];
 
-          oHBox.getItems().forEach(oVBox => {
-  oVBox.getItems().forEach(oHBoxInner => {
-    if (oHBoxInner.isA("sap.m.HBox")) {
-      oHBoxInner.getItems().forEach(oControl => {
-        if (oControl.isA("sap.m.CheckBox") && oControl.getSelected()) {
-          seleccionados.push(oControl.getText());
-        }
-      });
-    }
-  });
-});
+            oHBox.getItems().forEach(oVBox => {
+                oVBox.getItems().forEach(oHBoxInner => {
+                    if (oHBoxInner.isA("sap.m.HBox")) {
+                        oHBoxInner.getItems().forEach(oControl => {
+                            if (oControl.isA("sap.m.CheckBox") && oControl.getSelected()) {
+                                seleccionados.push(oControl.getText());
+                            }
+                        });
+                    }
+                });
+            });
 
             localStorage.setItem("displaysDesactivados", JSON.stringify(seleccionados));
             MessageToast.show("Displays desactivados: " + seleccionados.join(", "));
             oDialog.close();
-             this._actualizarIndicadorDisplaysMarcados();
-        }        ,
+            this._actualizarIndicadorDisplaysMarcados();
+        },
         verificarAsignacionDeDisplays: function () {
             const ctx = this;
             const request = indexedDB.open("ventilado", 5);
@@ -506,6 +517,7 @@ sap.ui.define([
                         } else {
                             ctx._setBotones(false); // Solo avance por ruta
                         }
+
                     }
                 };
             };
@@ -513,11 +525,11 @@ sap.ui.define([
         _setBotones: function (todoHabilitado) {
             const oView = this.getView();
 
-            oView.byId("btScan").setEnabled(todoHabilitado);
-            oView.byId("btLog").setEnabled(todoHabilitado);
-            oView.byId("btAvance").setEnabled(todoHabilitado);
-            oView.byId("btDesconsolidado").setEnabled(todoHabilitado);
-            oView.byId("btCierre").setEnabled(todoHabilitado);
+            //oView.byId("btScan").setEnabled(true);
+            oView.byId("btLog").setEnabled(true);
+            oView.byId("btAvance").setEnabled(true);
+            oView.byId("btDesconsolidado").setEnabled(true);
+            oView.byId("btCierre").setEnabled(true);
 
             // Avance por Ruta siempre habilitado
             oView.byId("btAvanceRuta").setEnabled(true);
@@ -550,7 +562,26 @@ sap.ui.define([
             const hayMarcados = lista.length > 0;
             this.byId("lblDisplaysMarcados").setVisible(hayMarcados);
         },
-       /*  _preseleccionarDisplaysMarcados: function (oDialog) {
+        /*  _preseleccionarDisplaysMarcados: function (oDialog) {
+             // Recuperar selección previa
+             const seleccionados = JSON.parse(localStorage.getItem("displaysDesactivados") || "[]");
+ 
+             // El contenido principal es un HBox
+             const oHBox = oDialog.getContent()[0];
+             if (!oHBox) return;
+ 
+             // Recorremos ambos VBox
+             oHBox.getItems().forEach(oVBox => {
+                 oVBox.getItems().forEach(oControl => {
+                     if (oControl.isA("sap.m.CheckBox")) {
+                         const sTexto = oControl.getText();
+                         oControl.setSelected(seleccionados.includes(sTexto));
+                     }
+                 });
+             });
+         }, */
+
+        _preseleccionarDisplaysMarcados: function (oDialog) {
             // Recuperar selección previa
             const seleccionados = JSON.parse(localStorage.getItem("displaysDesactivados") || "[]");
 
@@ -558,43 +589,240 @@ sap.ui.define([
             const oHBox = oDialog.getContent()[0];
             if (!oHBox) return;
 
-            // Recorremos ambos VBox
+            // Recorremos ambos VBox (columnas)
             oHBox.getItems().forEach(oVBox => {
-                oVBox.getItems().forEach(oControl => {
-                    if (oControl.isA("sap.m.CheckBox")) {
-                        const sTexto = oControl.getText();
-                        oControl.setSelected(seleccionados.includes(sTexto));
+                // Dentro de cada VBox hay varios HBox (CheckBox + Icon)
+                oVBox.getItems().forEach(oHBoxItem => {
+                    if (oHBoxItem.isA("sap.m.HBox")) {
+                        oHBoxItem.getItems().forEach(oControl => {
+                            if (oControl.isA("sap.m.CheckBox")) {
+                                const sTexto = oControl.getText();
+                                oControl.setSelected(seleccionados.includes(sTexto));
+                            }
+                        });
                     }
                 });
             });
-        }, */
+        },
+        _verificarAsignacionYRedirigir: function () {
+            const ctx = this;
+            const request = indexedDB.open("ventilado", 5);
 
-_preseleccionarDisplaysMarcados: function (oDialog) {
-  // Recuperar selección previa
-  const seleccionados = JSON.parse(localStorage.getItem("displaysDesactivados") || "[]");
+            request.onsuccess = function (event) {
+                const db = event.target.result;
+                const transaction = db.transaction(["ventilado"], "readonly");
+                const objectStore = transaction.objectStore("ventilado");
 
-  // El contenido principal es un HBox
-  const oHBox = oDialog.getContent()[0];
-  if (!oHBox) return;
+                const rutasConDisplay = new Set();
+                const todasLasRutas = new Set();
 
-  // Recorremos ambos VBox (columnas)
-  oHBox.getItems().forEach(oVBox => {
-    // Dentro de cada VBox hay varios HBox (CheckBox + Icon)
-    oVBox.getItems().forEach(oHBoxItem => {
-      if (oHBoxItem.isA("sap.m.HBox")) {
-        oHBoxItem.getItems().forEach(oControl => {
-          if (oControl.isA("sap.m.CheckBox")) {
-            const sTexto = oControl.getText();
-            oControl.setSelected(seleccionados.includes(sTexto));
-          }
-        });
-      }
-    });
-  });
-},
+                const cursorRequest = objectStore.openCursor();
+
+                cursorRequest.onsuccess = function (e) {
+                    const cursor = e.target.result;
+                    if (cursor) {
+                        const registro = cursor.value;
+                        const ruta = registro.LugarPDisp;
+                        todasLasRutas.add(ruta);
+
+                        if (registro.Prodr && registro.Prodr.trim() !== "") {
+                            rutasConDisplay.add(ruta);
+                        }
+
+                        cursor.continue();
+                    } else {
+                        const todasAsignadas = [...todasLasRutas].every(ruta =>
+                            rutasConDisplay.has(ruta)
+                        );
+
+                        if (todasAsignadas) {
+                            ctx._setBotones(true);
+                        } else {
+                            ctx._setBotones(false);
+
+                            // Redirigir automáticamente a Avance por Ruta
+                            ctx.onExit();
+                            const oRouter = sap.ui.core.UIComponent.getRouterFor(ctx);
+                            oRouter.navTo("Avance2");
+                        }
+                    }
+                };
+            };
+        },
+        /*********************** */
+        /* -------------------------------------------------------- */
+        /* 1) Leer ZPICK_ESTSet y construir la lista SIN duplicados */
+        /* -------------------------------------------------------- */
+        _cargarDepositos: function () {
+            var oOData = new ODataModel("/sap/opu/odata/sap/ZVENTILADO_SRV/");
+            // const oOData = this.getOwnerComponent().getModel(); // modelo por defecto
+            BusyIndicator.show(0);
+
+            // Pedimos sólo las columnas necesarias para aligerar la carga
+            oOData.read("/ZPICK_ESTSet", {
+                success: (oData) => {
+                    BusyIndicator.hide();
+
+                    // --- deduplicar por Deposito ------------------------------------
+                    const aUniq = [];
+                    const oVisto = {};          // hash para no repetir
+                    oData.results.forEach((r) => {
+                        if (r.Deposito && !oVisto[r.Deposito]) {
+                            oVisto[r.Deposito] = true;
+                            aUniq.push({
+                                Codigo: r.Deposito,
+                                Descripcion: r.Descripcion || r.Deposito
+                            });
+                        }
+                    });
+                    // Cargar modelo "deps" para el Select
+                    const oJson = new JSONModel(aUniq);
+                    this.getView().setModel(oJson, "deps");
+                },
+                error: () => {
+                    BusyIndicator.hide();
+                    MessageBox.error("No se pudo leer la lista de depósitos");
+                }
+            });
+        },
 
 
+        /* -------------------------------------------------------- */
+        /*  Si ya estaba asignada (segunda vez que abre la app)     */
+        /* -------------------------------------------------------- */
+        _rellenarDatosFijos: function () {
+            this.byId("selDeposito")
+                .setSelectedKey(localStorage.getItem("depositoCod"));
 
+            this.byId("selDeposito").setEnabled(false);
+            this.byId("puesto")
+                .setValue(localStorage.getItem("estacionTxt"));
+            // this.getView().getModel().setProperty("/estacionAsignada", true); 
+            this.byId("puesto").setEnabled(false);
+            this.byId("btnAsignar").setEnabled(false);
+
+        },
+        onAsignarPress: function () {
+
+            var sDeposito = this.byId("selDeposito").getSelectedKey(); // para que se actualice el modelo
+            // this._asignarEstacion(sDeposito);   // reutilizas la misma función
+            // if (!sDeposito) { return; }
+
+            var oOData = new sap.ui.model.odata.v2.ODataModel("/sap/opu/odata/sap/ZVENTILADO_SRV/", {
+                useBatch: false,
+                defaultBindingMode: "TwoWay",
+                deferredGroups: ["batchGroup1"]
+            });
+            BusyIndicator.show(0);
+            var aFilters = [];
+            //aFilters.push(new Filter("Asignada", FilterOperator.EQ, ""));
+            // Crear el primer filtro: Asignada eq ''
+            var oFilterAsignada = new sap.ui.model.Filter("Asignada", sap.ui.model.FilterOperator.EQ, "");
+            // Crear el segundo filtro: Deposito eq '${sDeposito}'
+            var oFilterDeposito = new sap.ui.model.Filter("Deposito", sap.ui.model.FilterOperator.EQ, sDeposito);
+            // Combinar ambos filtros con el operador AND
+            var oCombinedFilter = new sap.ui.model.Filter({
+                filters: [oFilterAsignada, oFilterDeposito],
+                and: true // Esto indica que los filtros deben cumplirse simultáneamente (AND)
+            });
+
+            // Agregar el filtro combinado al array de filtros
+            aFilters.push(oCombinedFilter);
+            const sPath = "/ZPICK_ESTSet";
+            oOData.read(sPath, {
+                filters: aFilters,
+                success: (oData) => {
+                    BusyIndicator.hide();
+                    if (!oData.results.length) {
+                        MessageBox.error("No hay estaciones libres para este depósito");
+                        return;
+                    }
+                    const oRow = oData.results[0];
+
+                    // --- 3) Marcarla como ocupada ----------------------------
+                    const sKeyPath = oOData.createKey("ZPICK_ESTSet", { Id: oRow.Id });
+                    oOData.update("/" + sKeyPath, { Asignada: "X" }, {
+                        merge: true,
+                        success: () => {
+                            // Persistir en localStorage
+                            localStorage.setItem("depositoCod", sDeposito);
+                            localStorage.setItem("estacionId", oRow.Id);
+                            localStorage.setItem("estacionTxt", oRow.Estacion || oRow.Id);
+                            localStorage.setItem("ipApi", oRow.IpApi);
+
+                            // Rellenar y bloquear controles
+                            this.byId("selDeposito").setEnabled(false);
+                            this.byId("puesto").setValue(oRow.Estacion);
+                            this.byId("puesto").setEnabled(false);
+                            this.byId("btnAsignar").setEnabled(false);
+                            this.getView().getModel().setProperty("/estacionAsignada", true);
+
+                            MessageToast.show("Estación asignada: " + oRow.Estacion);
+                        },
+                        error: () => MessageBox.error("Error al reservar la estación")
+                    });
+                },
+                error: () => {
+                    BusyIndicator.hide();
+                    MessageBox.error("Error al buscar la estación libre");
+                }
+            });
+        },
+        onAdminUnlock: function () {
+            const oView = this.getView();
+            const input = new sap.m.Input({ type: "Password", placeholder: "Ingrese clave" });
+
+            const dialog = new sap.m.Dialog({
+                title: "Desbloquear asignación",
+                content: [input],
+                beginButton: new sap.m.Button({
+                    text: "Aceptar",
+                    press: () => {
+                        const clave = input.getValue();
+                        if (clave === "12345") { // 🔐 Cambiar a tu clave real
+
+
+                            /****  marcar como libre  */
+                            var oOData = new sap.ui.model.odata.v2.ODataModel("/sap/opu/odata/sap/ZVENTILADO_SRV/", {
+                                useBatch: false,
+                                defaultBindingMode: "TwoWay",
+                                deferredGroups: ["batchGroup1"]
+                            });
+                            const sKeyPath = oOData.createKey("ZPICK_ESTSet", { Id: localStorage.getItem("estacionId") });
+                            oOData.update("/" + sKeyPath, { Asignada: "" }, {
+                                merge: true,
+                                success: () => {
+
+
+                                    localStorage.removeItem("depositoCod");
+                                    localStorage.removeItem("estacionId");
+                                    localStorage.removeItem("estacionTxt");
+                                    localStorage.removeItem("ipApi");
+                                    oView.byId("puesto").setValue("");
+                                    oView.byId("selDeposito").setEnabled(true);
+                                    oView.byId("selDeposito").setEnabled(true);
+                                    oView.byId("btnAsignar").setEnabled(true);
+                                    MessageToast.show("Estación asignada: " + oRow.Estacion);
+                                },
+                                error: () => MessageBox.error("Error al reservar la estación")
+                            });
+
+                            sap.m.MessageToast.show("Modo administrador activado");
+                            dialog.close();
+                        } else {
+                            sap.m.MessageBox.error("Clave incorrecta");
+                        }
+                    }
+                }),
+                endButton: new sap.m.Button({
+                    text: "Cancelar",
+                    press: () => dialog.close()
+                }),
+                afterClose: () => dialog.destroy()
+            });
+
+            dialog.open();
+        }
 
 
     });

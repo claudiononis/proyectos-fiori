@@ -53,7 +53,7 @@
                             <Text text="&#x2192;" class="arrowText" />
                         </VBox>
                         <VBox class="spBox">
-                            <Label id="lbRuta" text="RUTA" visible="{/isArrowVisible}" class="inputDescripcion" />
+                            <Label id="lbRuta" text="Display" visible="{/isArrowVisible}" class="inputDescripcion" />
                             <Text id="txtRuta" text="" class="spTextBlack" />
                         </VBox>
                     </HBox>

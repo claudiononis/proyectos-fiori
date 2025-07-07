@@ -1,7 +1,8 @@
 <mvc:View controllerName="ventilado.ventilado.controller.View1"
     xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
     xmlns="sap.m"
-    xmlns:layout="sap.ui.layout">
+    xmlns:layout="sap.ui.layout"
+    xmlns:core="sap.ui.core">
 
     <Page title="Inicio de Sesión" class="sapUiContentPadding">
         <!-- Usamos el prefijo "layout" para el control Grid -->
@@ -9,13 +10,33 @@
             <!-- Panel Usuario -->
             <VBox>
                 <Panel headerText="Información de Usuario" class="sapUiResponsiveMargin" expandable="false" height="100%">
-                    <VBox class="sapUiSmallMargin">
-                        <!-- Renglón 1 -->
-                        <VBox alignItems="Center" class="sapUiSmallMarginBottom">
+                    <HBox alignItems="Center" class="sapUiSmallMarginBottom">
+                        <!-- Columna 1: Puesto de trabajo -->
+                        <VBox class="sapUiSmallMargin">
                             <Label text="Puesto de trabajo:" />
                             <Input id="puesto" width="150px" required="true"/>
                         </VBox>
 
+                        <!-- Columna 2: Depósito -->
+                        <VBox class="sapUiSmallMargin">
+                            <Label text="Depósito:" />
+                            <Select id="selDeposito" width="10rem" items="{ path: 'deps>/' }">
+                                <core:Item key="{deps>Codigo}" text="{deps>Descripcion}" />
+                            </Select>
+                        </VBox>
+
+                        <!-- Columna 3: Botones Asignar y Desasignar -->
+                        <VBox class="sapUiSmallMargin">
+                            <Label text="" />
+                            <HBox>
+                            <Button id="btnAsignar" text="Asignar" press="onAsignarPress" enabled="{= ${view>/depositoSel} !== '' }" />
+                            <Button text="Desasignar" type="Negative" class="buttonSpacing" press= "onAdminUnlock"/>
+                            </HBox>
+                        </VBox>
+                    </HBox>
+
+
+                    <VBox class="sapUiSmallMargin">
 
 
 
@@ -71,19 +92,16 @@
                 <Panel headerText="Acciones" class="sapUiResponsiveMargin" expandable="false" height="100%">
                     <VBox class="sapUiSmallMargin">
                         <Button text="Buscar datos" press="onBuscarPress" type="Emphasized" width="90%" class="sapUiTinyMarginBottom"/>
-                        <Button id="btScan" text="Scan de productos" press="onScanPress" enabled="false" width="90%" class="sapUiTinyMarginBottom"/>
-                        <Button id="btLog" text="Ver Log" press="onLogPress" enabled="false" width="90%" class="sapUiTinyMarginBottom"/>
+                        <Button id="btLog" text="Ver Log" press="onLogPress" enabled="true" width="90%" class="sapUiTinyMarginBottom"/>
                         <HBox width="90%" justifyContent="SpaceBetween" class="sapUiTinyMarginBottom">
                             <VBox width="50%">
-                                <Button id="btAvance" text="Avance por Código" press="onAvancePPress" enabled="false" width="100%"/>
+                                <Button id="btAvance" text="Avance por Código" press="onAvancePPress" enabled="true" width="100%"/>
                             </VBox>
                             <VBox width="50%">
-                                <Button id="btAvanceRuta" text="Avance por Ruta" press="onAvanceRutaPress" enabled="false" width="100%"/>
+                                <Button id="btAvanceRuta" text="Avance por Ruta" press="onAvanceRutaPress" enabled="true" width="100%"/>
                             </VBox>
                         </HBox>
-
-
-                        <Button id="btDesconsolidado" text="Desafectación" press="onDesconsolidadoPress" width="90%" enabled="false" type="Reject" class="sapUiTinyMarginTop"/>
+                        <Button id="btDesconsolidado" text="Desafectación" press="onDesconsolidadoPress" width="90%" enabled="true" type="Reject" class="sapUiTinyMarginTop"/>
                         <Button id="btCierre" text="Cierre" press="onCierrePress" enabled="false" type="Reject" width="90%" class="sapUiTinyMarginTop"/>
                     </VBox>
                 </Panel>

@@ -195,6 +195,11 @@ sap.ui.define([
           oModel.setProperty("/totalM3", totalM3);
           oModel.setProperty("/totalCubTeo", totalCubTeo);
 
+          const yaConfirmado = localStorage.getItem("asignacionConfirmada") === "true";
+          ctx.getView().byId("btConfirmarContenedores").setEnabled(!yaConfirmado);
+          ctx.getView().byId("btScan2").setEnabled(yaConfirmado);
+
+
         })
         .catch((error) => {
           console.error("Error al obtener y procesar datos:", error);
@@ -248,6 +253,11 @@ sap.ui.define([
 
 
     onChangeContenedor: function (oEvent) {
+      if (localStorage.getItem("asignacionConfirmada") === "true") {
+        sap.m.MessageToast.show("Asignación bloqueada. Activar modo administrador.");
+        return;
+      }
+
       const oComboBox = oEvent.getSource();
       const sNuevoContenedor = oComboBox.getSelectedKey();
       if (!sNuevoContenedor) return;
@@ -304,6 +314,11 @@ sap.ui.define([
     },
 
     onConfirmarContenedores: function () {
+      this.getView().byId("btScan2").setEnabled(true);
+      // 🔒 Marcar que ya se confirmó la asignación
+      localStorage.setItem("asignacionConfirmada", "true");
+      this.getView().byId("btConfirmarContenedores").setEnabled(false);
+
       var ctx = this;
       var oModel = this.getView().getModel();
       var aFullData = oModel.getProperty("/tableData");
@@ -498,9 +513,19 @@ sap.ui.define([
     },
 
     onNavToScan: function () {
-      var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-      oRouter.navTo("Scan");
+      /*    var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+         oRouter.navTo("Scan"); */
+      const oModel = this.getView().getModel();
+      const aData = oModel.getProperty("/tableData");
+      // Asegurar que contenedor y display estén guardados
+      this.guardarEnIndexedDB(aData).then(() => {
+        var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+        oRouter.navTo("Scan");
+      }).catch((error) => {
+        sap.m.MessageBox.error("Error al guardar datos antes de escanear: " + error);
+      });
     },
+
 
 
     /************************** */
@@ -716,7 +741,39 @@ sap.ui.define([
       });
 
       return aData;
+    },
+
+    onAdminUnlock: function () {
+      const oView = this.getView();
+      const input = new sap.m.Input({ type: "Password", placeholder: "Ingrese clave" });
+
+      const dialog = new sap.m.Dialog({
+        title: "Desbloquear asignación",
+        content: [input],
+        beginButton: new sap.m.Button({
+          text: "Aceptar",
+          press: () => {
+            const clave = input.getValue();
+            if (clave === "12345") { // 🔐 Cambiar a tu clave real
+              localStorage.removeItem("asignacionConfirmada");
+              oView.byId("btConfirmarContenedores").setEnabled(true);
+              sap.m.MessageToast.show("Modo administrador activado");
+              dialog.close();
+            } else {
+              sap.m.MessageBox.error("Clave incorrecta");
+            }
+          }
+        }),
+        endButton: new sap.m.Button({
+          text: "Cancelar",
+          press: () => dialog.close()
+        }),
+        afterClose: () => dialog.destroy()
+      });
+
+      dialog.open();
     }
+
 
 
   });

@@ -427,7 +427,12 @@ sap.ui.define([
                             "DIRECCION": registro.Calle,
                             "LOCALIDAD": registro.LugarDestinatario,
                             "CODIGOINTERNO": registro.CodigoInterno,
-                            "DISPLAY": registro.display
+                            // "DISPLAY": registro.display
+                            "DISPLAY": (registro.Prodr || registro.display)
+                                ? ((registro.Prodr || registro.display).startsWith("dsp-")
+                                    ? (registro.Prodr || registro.display)
+                                    : "dsp-" + (registro.Prodr || registro.display))
+                                : ""
 
                         };
                     }
@@ -784,6 +789,7 @@ sap.ui.define([
                         // Actualiza la pantalla
                         cantidad.setText(cantidadYRuta.cantidad);
                         sRuta.setText(cantidadYRuta.ruta);
+                        sRuta.setText(cantidadYRuta.display);
                         descripcion.setText(cantidadYRuta.descripcion);
                         //  Ean.setValue(cantidadYRuta.ean);
                         Ean.setValue("");
@@ -822,6 +828,7 @@ sap.ui.define([
                             // Actualiza la pantalla
                             cantidad.setText(cantidadYRuta3.cantidad);
                             sRuta.setText(cantidadYRuta3.ruta);
+                            sRuta.setText(cantidadYRuta3.display);
                             descripcion.setText(cantidadYRuta3.descripcion);
                             //  Ean.setValue(cantidadYRuta.ean);
                             Ean.setValue("");
@@ -877,6 +884,7 @@ sap.ui.define([
                             // Actualiza la pantalla
                             cantidad.setText(cantidadYRuta.cantidad);
                             sRuta.setText(cantidadYRuta.ruta);
+                            sRuta.setText(cantidadYRuta.display);
                             descripcion.setText(cantidadYRuta.descripcion);
                             //Ean.setValue(cantidadYRuta.ean);
                             Ean.setValue("");
@@ -912,6 +920,7 @@ sap.ui.define([
                                     // Actualiza la pantalla
                                     cantidad.setText(cantidadYRuta3.cantidad);
                                     sRuta.setText(cantidadYRuta3.ruta);
+                                    sRuta.setText(cantidadYRuta3.display);
                                     descripcion.setText(cantidadYRuta3.descripcion);
                                     //  Ean.setValue(cantidadYRuta.ean);
                                     Ean.setValue("");
@@ -1263,7 +1272,7 @@ sap.ui.define([
 
             try {
                 var datos = await this.onGetData(eanInput, busqueda); // Realiza una sola lectura de la tabla
-                return { cantidad: datos.Cantidad, ruta: datos.Ruta, descripcion: datos.descripcion, id: datos.id, ean: datos.ean, ci: datos.ci, AdicChar2: datos.AdicChar2, Kgbrv: datos.Kgbrv, M3v: datos.M3v }; // Devuelve un objeto con la cantidad y la ruta
+                return { cantidad: datos.Cantidad, ruta: datos.Ruta, descripcion: datos.descripcion, id: datos.id, ean: datos.ean, ci: datos.ci, AdicChar2: datos.AdicChar2, Kgbrv: datos.Kgbrv, M3v: datos.M3v, display: datos.DISPLAY }; // Devuelve un objeto con la cantidad y la ruta
             } catch (error) {
                 // console.error("Error al obtener la cantidad y la ruta:", error);
                 return { cantidad: -3, ruta: -1, descripcion: "" }; // o cualquier otro valor predeterminado si lo prefieres
@@ -1273,7 +1282,7 @@ sap.ui.define([
 
             try {
                 var datos = await this.onGetData3(eanInput, busqueda); // Realiza una sola lectura de la tabla
-                return { cantidad: datos.Cantidad, ruta: datos.Ruta, descripcion: datos.descripcion, id: datos.id, ean: datos.ean, ci: datos.ci, AdicChar2: datos.AdicChar2, Kgbrv: datos.Kgbrv, M3v: datos.M3v }; // Devuelve un objeto con la cantidad y la ruta
+                return { cantidad: datos.Cantidad, ruta: datos.Ruta, descripcion: datos.descripcion, id: datos.id, ean: datos.ean, ci: datos.ci, AdicChar2: datos.AdicChar2, Kgbrv: datos.Kgbrv, M3v: datos.M3v, display: datos.DISPLAY }; // Devuelve un objeto con la cantidad y la ruta
             } catch (error) {
                 // console.error("Error al obtener la cantidad y la ruta:", error);
                 return { cantidad: -3, ruta: -1, descripcion: "" }; // o cualquier otro valor predeterminado si lo prefieres
@@ -1870,7 +1879,7 @@ sap.ui.define([
                     var updateNext = function (index) {
                         if (index < aData.length) {
                             updateRecord(aData[index], function () {
-                                updateNext(index + 1); 
+                                updateNext(index + 1);
                             });
                         } else {
                             MessageToast.show("Todos los registros se han actualizado con éxito.");
@@ -2014,7 +2023,8 @@ sap.ui.define([
                                         ci: data.CodigoInterno,
                                         AdicChar2: data.AdicChar2,
                                         Kgbrv: data.Kgbrv,
-                                        M3v: data.M3v
+                                        M3v: data.M3v,
+                                        DISPLAY: data.display.replace("dsp-", "")
                                     };
                                     flag = 2;
                                     resolve(result);
@@ -2129,9 +2139,15 @@ sap.ui.define([
                             // Si no hay más registros, proceder a ordenar y devolver el primer registro incompleto
 
                             // Ordenar el array por CodigoInterno y luego por LugarPDisp (convertido a número)
+                            /*  resultArray.sort(function (a, b) {
+                                 if (a.CodigoInterno === b.CodigoInterno) {
+                                     return parseInt(a.LugarPDisp, 10) - parseInt(b.LugarPDisp, 10);
+                                 }
+                                 return a.CodigoInterno.localeCompare(b.CodigoInterno);
+                             }); */
                             resultArray.sort(function (a, b) {
                                 if (a.CodigoInterno === b.CodigoInterno) {
-                                    return parseInt(a.LugarPDisp, 10) - parseInt(b.LugarPDisp, 10);
+                                    return ctx._getDisplayNumber(a.display) - ctx._getDisplayNumber(b.display);
                                 }
                                 return a.CodigoInterno.localeCompare(b.CodigoInterno);
                             });
@@ -2149,7 +2165,8 @@ sap.ui.define([
                                         ci: data.CodigoInterno,
                                         AdicChar2: data.AdicChar2,
                                         Kgbrv: data.Kgbrv,
-                                        M3v: data.M3v
+                                        M3v: data.M3v,
+                                        DISPLAY: data.display.replace("dsp-", "")
                                     };
                                     flag = 2;
                                     resolve(result);
@@ -2157,6 +2174,8 @@ sap.ui.define([
                                 }
 
                             }
+
+
 
                             if (flag == 1 && busqueda == 1) {
                                 // console.log("Es un producto pero sobra");                    
@@ -2578,7 +2597,7 @@ sap.ui.define([
                 rutas: tableData.map((item) => ({
                     rutaId: item.Ruta,
                     cantidad: item.TOT,
-                    displayId: this.obtenerDisplayId(item.Ruta, datosD)
+                    displayId: ctx.obtenerDisplayId(item.Ruta, datosD)
                 }))
             };
             oModel.setProperty("/estadoMensaje", "Esperando respuesta de la API Pick to Line...");
@@ -2597,7 +2616,7 @@ sap.ui.define([
                         MessageBox.error("Error al encender displays: " + data.message);
                     }
                 }.bind(this))  // 🔧 preserve el this del controlador
-                .catch((err) => {                    
+                .catch((err) => {
                     MessageBox.error(
                         "Error de red al llamar a PickToLine API.\n\n" +
                         "Por favor, verifique:\n" +
@@ -2621,7 +2640,7 @@ sap.ui.define([
             let registro = datos.find((item) => item.LugarPDisp === ruta);
 
             if (registro) {
-                return "dsp-" + registro.Prodr.padStart(3, '0');
+                return registro.display;//.Prodr.padStart(3, '0');
             } else {
                 return "dsp-000"; // por defecto si no se encuentra
             }
@@ -2687,6 +2706,25 @@ sap.ui.define([
             }
 
             const cantidad = ruta.cantidadConfirmada;
+
+            // ------------------------------------------------------------------
+            // Actualizar SCAN (y de paso FALTA si la manejás) en /tableData
+            // ------------------------------------------------------------------
+            const idx = tableData.findIndex(item => item.Ruta === ruta.rutaId);   // posición en el array
+
+            if (idx !== -1) {
+                // 1) Marcar la cantidad escaneada
+                oModel.setProperty(`/tableData/${idx}/SCAN`, cantidad);
+
+                // 2) (Opcional) Recalcular FALTA si llevás ese campo
+                const tot = oModel.getProperty(`/tableData/${idx}/TOT`) || 0;
+                oModel.setProperty(`/tableData/${idx}/FALTA`, Math.max(tot - cantidad, 0));
+
+                // 3) Forzar actualización de bindings si el modelo no tiene two‑way autobind
+                oModel.refresh(true);
+            }
+            ///////////
+
             const id = await this.buscarIdEnIndexedDBPorRuta(ruta.rutaId);  // Implementado más abajo
             if (!id) {
                 console.warn("No se encontró ID en IndexedDB para la ruta:", ruta.rutaId);
@@ -2718,6 +2756,24 @@ sap.ui.define([
                     resultadoFormateadoKgbrr,
                     resultadoFormateadoM3r
                 );
+                const oModel = this.getView().getModel();
+                const tableData = oModel.getProperty("/tableData") || [];
+
+                // Buscar el próximo item con scan === 0
+                const siguienteItem = tableData.find(item => parseInt(item.SCAN) === 0);
+
+                if (siguienteItem) {
+                    const cantidad = siguienteItem.FALTA; // o TOT si preferís
+                    const display = siguienteItem.DISPLAY || siguienteItem.Ruta || "";
+
+                    this.getView().byId("txtCantidad").setText(cantidad.toString());
+                    this.getView().byId("txtRuta").setText(display.replace("dsp-", ""));
+                } else {
+                    // Si ya está todo completo
+                    this.getView().byId("txtCantidad").setText("");
+                    this.getView().byId("txtRuta").setText("");
+                }
+
                 /*  ctx.recalcularDatosDeModelo();
                   ctx.verificarCicloCompletado();*/
             };
@@ -2775,7 +2831,9 @@ sap.ui.define([
             }
         },
 
-
+        _getDisplayNumber: function (sDisplay) {
+            return parseInt(String(sDisplay).replace(/^dsp-/, ""), 10) || 0;
+        }
 
 
 
