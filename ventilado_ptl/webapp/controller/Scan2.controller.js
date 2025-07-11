@@ -2719,7 +2719,13 @@ sap.ui.define([
                 // 2) (Opcional) Recalcular FALTA si llevás ese campo
                 const tot = oModel.getProperty(`/tableData/${idx}/TOT`) || 0;
                 oModel.setProperty(`/tableData/${idx}/FALTA`, Math.max(tot - cantidad, 0));
+/* ---------- 2. Recalcular los totales ---------- */
+    const aTable = oModel.getProperty("/tableData") || [];
+    const totalScan  = aTable.reduce((s, r) => s + (parseFloat(r.SCAN)  || 0), 0);
+    const totalFalta = aTable.reduce((s, r) => s + (parseFloat(r.FALTA) || 0), 0);
 
+    oModel.setProperty("/totalScan",  totalScan);
+    oModel.setProperty("/totalFalta", totalFalta);
                 // 3) Forzar actualización de bindings si el modelo no tiene two‑way autobind
                 oModel.refresh(true);
             }
